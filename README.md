@@ -8,9 +8,8 @@
 2.4 Dividir conjunto de entrenamiento y validación<br />
 
 3. Red Convolucional<br />
-3.1 Estructura del modelo<br />
-3.2 Set the optimizer and annealer<br />
-3.3 Data augmentation<br />
+3.1 Conceptos basicos
+3.2 Estructura del modelo<br />
 
 4. Evaluate the model <br />
 4.1 Training and validation curves<br />
@@ -91,6 +90,7 @@ train_labels = classes[VALIDATION_SIZE:]
 train_labels_flat = labels_flat[VALIDATION_SIZE:]
 ```
 ## 3. Red Convolucional
+### 3.1 Conceptos Basicos
 Las redes neuronales convolucionales (CNNs) son una variación biológicamente inspirada de los perceptrones multicapa (MLPs). A diferencia de MLPs donde cada neurona tiene un vector de peso separado, las neuronas en las CNNs comparten pesos.<br />
 Utilizando la estrategia de compartir de pesos, las neuronas son capaces de realizar **convoluciones** en los pixels de una imagen utilizando un **filtro de convolución(kernel)** el cual está formado por pesoss.</br> 
 
@@ -108,7 +108,7 @@ Para completar la convolución en toda la imagen, repetimos este proceso, alinea
 <img src = "https://user-images.githubusercontent.com/18404919/29762538-8abcc3be-8b94-11e7-9bc2-11ce2f359ac4.png" width="400" height = 200/>
 </p>
 
-El siguiente paso es repetir el proceso de convolución no solo para un tipo de filtro(kernel) sino para varios. El resultado es un conjunto de imágenes filtradas, una para cada uno de nuestros filtros. Es conveniente pensar en toda esta colección de operaciones de convolución como un único paso de procesamiento. En CNNs esto se conoce como una capa de convolución, haciendo alusión al hecho de que pronto tendrá otras capas agregadas a ella.
+>El siguiente paso es repetir el proceso de convolución no solo para un tipo de filtro(kernel) sino para varios. El resultado es un conjunto de imágenes filtradas, una para cada uno de nuestros filtros. Es conveniente pensar en toda esta colección de operaciones de convolución como un único paso de procesamiento. En CNNs esto se conoce como una capa de convolución, haciendo alusión al hecho de que pronto tendrá otras capas agregadas a ella.
 <p align="center">
 <img src = "https://user-images.githubusercontent.com/18404919/29763319-3c606b40-8b98-11e7-8f6e-d73977680d20.png" width="480" >
 </p>
@@ -131,3 +131,27 @@ Las redes convolucionales funcionan moviendo estos pequeños filtros(kernels) a 
 </p>
 
 **RELU(Rectified Linear Units)**
+>Entre la capa de convolucion y la capa de pooling se encuentra la capa RELU que esta compuesta por neuronas que poseen una funcion de activación llamada **Función lineal rectificada** que deriva de la función de activación sigmoidal, pero tiene mayores ventajas que esta última y tambien de la tangencial.(http://www.jefkine.com/general/2016/08/24/formulating-the-relu/) 
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29765002-05919060-8b9f-11e7-94c5-3943d3b0ca4f.png"  width="480" />
+</p>
+
+>Cuando se produce un número negativo, se intercambia por un 0. Esto ayuda a que la CNN se mantenga matemáticamente sana al manteniendo a los valores aprendidos de quedar cerca de 0 o mayor a este, y así asegura que la salida sea siempre positiva porque los valores negativos se ponen a cero.
+
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29765017-11f9a96e-8b9f-11e7-9f61-f26b5184f499.png"  width="480" />
+</p>
+
+Las imágenes se filtran(capa_Convolucion), se rectifican(capa_RELU) y se agrupan(capa_Pooling) para crear un conjunto de imágenes reducidas y filtradas por características. Estos pueden ser filtrados y encogidos una y otra vez. Cada vez, las características se hacen más grandes y más complejas, y las imágenes se vuelven más compactas.
+
+**MLP Totalmente Conectado**
+>Eventualmente, con un mapa de características lo suficientemente pequeño, el contenido se aplastará en un vector de una dimensión y será entrada para en un MLP totalmente conectado para su procesamiento. La última capa de este MLP totalmente conectado es visto como la salida.<br/>
+Cuando se presenta una nueva imagen a la CNN, se filtra a través de las capas inferiores hasta que alcanza al final la capa totalmente conectada. Luego se lleva a cabo una elección y la respuesta con la mayoría de los votos gana y se declara la categoría de la entrada.
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29766302-eb5cc8d6-8ba3-11e7-9426-e2e9ae9bd8bf.png"  width="480" />
+</p>
+### 3.2 Estructura del modelo
+
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29766434-582acb70-8ba4-11e7-8efb-2c9e192d202d.png" />
+</p>
