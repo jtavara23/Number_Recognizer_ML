@@ -92,10 +92,20 @@ train_labels_flat = labels_flat[VALIDATION_SIZE:]
 ```
 ## 3. Red Convolucional
 Las redes neuronales convolucionales (CNNs) son una variación biológicamente inspirada de los perceptrones multicapa (MLPs). A diferencia de MLPs donde cada neurona tiene un vector de peso separado, las neuronas en las CNNs comparten pesos.<br />
-Utilizando la estrategia de compartir de pesos, las neuronas son capaces de realizar convoluciones en los pixels de una imagen utilizando un **filtro de convolución(kernel)** el cual esta formado por pesos.</br> 
->Fitro de Convolucion
+Utilizando la estrategia de compartir de pesos, las neuronas son capaces de realizar **convoluciones** en los pixels de una imagen utilizando un **filtro de convolución(kernel)** el cual está formado por pesoss.</br> 
+>Fitro de Convolucion(KERNEL)
+<p align="center">
 <img src="https://user-images.githubusercontent.com/18404919/29761167-91551f52-8b8d-11e7-815b-aaac24408588.png" heigth="480" width="480">
-Las redes convolucionales funcionan moviendo pequeños filtros a través de la imagen de entrada. Esto significa que los filtros se reutilizan para reconocer patrones en toda la imagen de entrada. Esto hace que las Redes Convolucionales sean mucho más potentes que las Redes Completamente Conectadas con el mismo número de variables. Esto a su vez hace que las Redes Convolucionales sean más rápidas para entrenar.
+</p>
+
+>Convolucion
+Es el proceso que consiste en calcular la coincidencia de un kernel con una parte de la imagen,y para conseguirlo simplemente se multiplica cada píxel en el kernel por el valor del píxel en la imagen. Para luego, sumar las respuestas y dividirlas por el número total de píxeles en el kernel.
+
+<img src = "https://user-images.githubusercontent.com/18404919/29762130-6b002a04-8b92-11e7-8933-5198ac33665d.png" heigth="480" width="480" />
+<img src = "https://user-images.githubusercontent.com/18404919/29762130-6b002a04-8b92-11e7-8933-5198ac33665d.png" heigth="480" width="480" />
+
+
+Las redes convolucionales funcionan moviendo estos pequeños filtros(kernels) a través de la imagen de entrada. Esto significa que los filtros se reutilizan para reconocer patrones en toda la imagen de entrada. Esto hace que las Redes Convolucionales sean mucho más potentes que las Redes Completamente Conectadas con el mismo número de variables. Esto a su vez hace que sean más rápidas para entrenar.
 
 
 
