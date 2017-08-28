@@ -40,7 +40,9 @@ from funcionesAuxiliares import  display,activation_vector
 Link: http://yann.lecun.com/exdb/mnist/
 >La base de datos MNIST("Modified National Institute of Standards and Technology") de dígitos manuscritos, disponible en esta página, tiene un conjunto de entrenamiento de 60.000 ejemplos y un conjunto de prueba de 10.000 ejemplos. Es un subconjunto de un conjunto más grande disponible de NIST. Los dígitos se han normalizado de tamaño y se han centrado en una imagen de tamaño fijo.
 Es una buena base de datos para las personas que quieren probar técnicas de aprendizaje y métodos de reconocimiento de patrones en los datos del mundo real, ya que se evita el esfuerzo de preprocesar y formatear las imagenes.<br />
-![numeros_mnist](https://user-images.githubusercontent.com/18404919/29759317-4b838534-8b80-11e7-9533-ed582f7ef037.png)
+<p align="center">
+  <img src=https://user-images.githubusercontent.com/18404919/29759317-4b838534-8b80-11e7-9533-ed582f7ef037.png>
+</p>
 
 ###  2.1 Cargar los Datos 
 ```python 
@@ -92,8 +94,7 @@ train_labels_flat = labels_flat[VALIDATION_SIZE:]
 Las redes neuronales convolucionales (CNNs) son una variación biológicamente inspirada de los perceptrones multicapa (MLPs). A diferencia de MLPs donde cada neurona tiene un vector de peso separado, las neuronas en las CNNs comparten pesos.<br />
 Utilizando la estrategia de compartir de pesos, las neuronas son capaces de realizar convoluciones en los pixels de una imagen utilizando un **filtro de convolución(kernel)** el cual esta formado por pesos.</br> 
 >Fitro de Convolucion
-![teo1](https://user-images.githubusercontent.com/18404919/29761167-91551f52-8b8d-11e7-815b-aaac24408588.png)
-
+<img src="https://user-images.githubusercontent.com/18404919/29761167-91551f52-8b8d-11e7-815b-aaac24408588.png" heigth="480" width="480">
 Las redes convolucionales funcionan moviendo pequeños filtros a través de la imagen de entrada. Esto significa que los filtros se reutilizan para reconocer patrones en toda la imagen de entrada. Esto hace que las Redes Convolucionales sean mucho más potentes que las Redes Completamente Conectadas con el mismo número de variables. Esto a su vez hace que las Redes Convolucionales sean más rápidas para entrenar.
 
 
