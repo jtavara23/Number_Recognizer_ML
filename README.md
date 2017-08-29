@@ -150,6 +150,7 @@ Cuando se presenta una nueva imagen a la CNN, se filtra a través de las capas i
 <p align="center">
 <img src = "https://user-images.githubusercontent.com/18404919/29766302-eb5cc8d6-8ba3-11e7-9426-e2e9ae9bd8bf.png"  width="480" />
 </p>
+Para mas información, visitar [aquí] (http://brohrer.github.io/how_convolutional_neural_networks_work.html)
 
 ### 3.2 Estructura del modelo
 <p align="center">
