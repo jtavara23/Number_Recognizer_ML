@@ -380,7 +380,7 @@ train_val_File = open("TrainVal_ac.csv","a")
 
 **Comenzamos el entrenamiento**
 ```python
-cant_imag_entrenamient = entrenam_imagenes.shape[0]
+cant_imag_entrenamiento = entrenam_imagenes.shape[0]
 
 ultima_iteracion = iterac_entren.eval(sess)
 print "Ultimo modelo en la iteracion: ", ultima_iteracion
@@ -388,18 +388,19 @@ print "Ultimo modelo en la iteracion: ", ultima_iteracion
 #Desde la ultima iteracion hasta el ITERACIONES_ENTRENAMIENTO dado 
 for i in range(ultima_iteracion, ITERACIONES_ENTRENAMIENTO):
 	#Obtener nuevo subconjunto(batch) de (BATCH_SIZE =100) imagenes
-	batch_img_input, batch_img_class = siguiente_batch(BATCH_SIZE,cant_imag_entrenamiento)
+	batch_img_entrada, batch_img_clase = siguiente_batch(BATCH_SIZE,cant_imag_entrenamiento)
 
 	# Entrenar el batch
-	sess.run(optimizador, feed_dict={x: batch_img_input, y_deseada: batch_img_class, keep_prob: DROPOUT})
-
+	# DROPOUT = 0.5
+	sess.run(optimizador, feed_dict={x: batch_img_entrada, y_deseada: batch_img_clase, keep_prob: DROPOUT})
+	
 	# Observar el progreso cada 'CHKP_REVISAR_PROGRESO' iteraciones
 	if(i+1) % CHKP_REVISAR_PROGRESO == 0 :
-		train_accuracy, validation_accuracy = chequear_progreso(sess, acierto, batch_img_input, batch_img_class, i)
+		train_accuracy, validation_accuracy = chequear_progreso(sess, acierto, batch_img_entrada, batch_img_clase, i)
 		print('En la iteracion %d , Aciertos: [Entrenamiento || Validacion] => %.4f || %.4f '% (i+1, train_accuracy, validation_accuracy))
-	#Crear 'punto de control' cuando se llego a las CHKP_GUARDAR_MODELO
+	#Crear 'punto de control' cuando se llego a las CHKP_GUARDAR_MODELO iteraciones
 	if (i+1) % CHKP_GUARDAR_MODELO == 0 :
-		#print('En la iteracion %d , Aciertos: [Entranamiento || Validacion] => %.4f || %.4f \n'% (i+1, train_accuracy, validation_accuracy))
+		print('En la iteracion %d , Aciertos: [Entranamiento || Validacion] => %.4f || %.4f \n'% (i+1, train_accuracy, validation_accuracy))
 		print('Guardando modelo %d ....' %(i+1))
 		saver.save(sess, modelPath+NOMBRE_MODELO, global_step=i+1,write_meta_graph=True)
 
