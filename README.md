@@ -154,9 +154,13 @@ Cuando se presenta una nueva imagen a la CNN, se filtra a través de las capas i
 ### 3.2 Construccion de La red Convolucional
 #### 3.2.1 Estructura del modelo
 
-**Configuracion de parametros**
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29766434-582acb70-8ba4-11e7-8efb-2c9e192d202d.png" />
+</p>
+
+**Configuracion de Parametros**<br/>
 Los tensores placeholder sirven como entrada al gráfico computacional de TensorFlow que podemos cambiar cada vez que ejecutamos el gráfico.
-None significa que el tensor puede contener un número arbitrario de imágenes, donde cada imagen es un vector de longitud dada.
+'None' significa que el tensor puede contener un número arbitrario de imágenes, donde cada imagen es un vector de longitud dada.
 ``` python
 # imagenes
 x = tf.placeholder('float', shape=[None, tam_imagen],name= NOMBRE_TENSOR_ENTRADA)
@@ -170,12 +174,78 @@ Las entradas y salidas de las capas convolucionales se hacen a traves de tensore
   4. Canales por imagen(de color/ de filtro)
 ``` python
 #las capas de convolucion esperan que las entradas sean encodificadas en tensores de 4D
-image = tf.reshape(x, [-1,altura_imagen, anchura_imagen,1])
-print (image.get_shape()) # =>(56000,28,28,1)
+imagen = tf.reshape(x, [-1,altura_imagen, anchura_imagen,1])
+print (imagen.get_shape()) # =>(56000,28,28,1)
 ```
-<p align="center">
-<img src = "https://user-images.githubusercontent.com/18404919/29766434-582acb70-8ba4-11e7-8efb-2c9e192d202d.png" />
-</p>
 
+**Fuciones de Inicializacion**<br/>
+``` python
+# tf.truncated_normal: Outputs random values from a truncated normal distribution.
+# The generated values follow a normal distribution with specified standard deviation.
+def inicializar_pesos(shape):
+	initial = tf.truncated_normal(shape, stddev=0.1)
+	return tf.Variable(initial)
 
+# tf.constant: Creates a constant tensor. 
+# The resulting tensor is populated with values of type dtype, as specified by arguments value and shape
+def inicializar_bias(shape):
+	initial = tf.constant(0.1, shape=shape)
+	return tf.Variable(initial)
+``` 
+**Primera Capa Convolucional**
+``` python
+#[tamanho_filtro,tamanho_filtro, canalEnt_img, cant_filtros]
+forma = [5, 5, 1, 32]
+pesos_conv1 = inicializar_pesos(shape = forma)
+biases_conv1 = inicializar_bias([32])
+
+#strides=[img,movx,movy ,filtro]
+convolucion1 = tf.nn.conv2d(imagen,
+                         pesos_conv1,
+                         strides=[1, 1, 1, 1],
+                         padding='SAME')
+print (convolucion1.get_shape()) # => (56000, 28,28, 32)
+
+#el valor del bias es adicionado para cada resultado de convolucion
+convolucion1 += biases_conv1
+
+#funcion de activacion
+act_conv1 = tf.nn.relu(convolucion1)
+print(act_conv1.get_shape()) # => (56000, 28, 28, 32)
+
+pool_conv1 = tf.nn.max_pool(act_conv1,
+                            ksize=[1, 2, 2, 1],
+                            strides=[1, 2, 2, 1],
+                            padding='SAME')
+print(pool_conv1.get_shape()) # => (56000, 14, 14, 32)
+``` 
+**Segunda Capa Convolucional**
+``` python
+#Forma de los pesos del filtro
+#[tamanho_filtro,tamanho_filtro, canalEnt_img, cant_filtros]
+forma = [5, 5, 32, 64]
+pesos_conv2 = inicializar_pesos(shape = forma)
+biases_conv2 = inicializar_bias([64])
+
+#strides=[img,movx,movy ,filtro]
+convolucion2 = tf.nn.conv2d(pool_conv1,
+                         pesos_conv2,
+                         strides=[1, 1, 1, 1],
+                         padding='SAME')
+print (convolucion2.get_shape()) # => (56000, 14,14, 64)
+
+#el valor del bias es adicionado para cada resultado de convolucion
+convolucion2 += biases_conv2
+
+#funcion de activacion
+act_conv2 = tf.nn.relu(convolucion2)
+print (act_conv2.get_shape()) # => (56000, 14,14, 64)
+
+pool_conv2 = tf.nn.max_pool(act_conv2,
+                            ksize=[1, 2, 2, 1],
+                            strides=[1, 2, 2, 1],
+                            padding='SAME')
+print (pool_conv2.get_shape()) # => (56000, 7, 7, 64)
+``` 
+**Capa Totalmente Conectada(Fully Connected)**
 
