@@ -1,14 +1,14 @@
 # Reconocedor De Numeros usando Redes Neuronales Convolucionales
 
  1. [Introduccion](#introduccion)
- 2. [Procesamiento de Datos](#procesamiento-de-datos)
-   2.1 [Cargar los Datos](#cargar-los-datos)
-	 2.2 [Normalizar](#normalizar)
-	 2.3 [Asignacion de clases](#asignacion-de-clases)
-	 2.4 [Dividir conjunto de entrenamiento y validación](#dividir-conjunto-de-entrenamiento-y-validación)
- 3. [Red Convolucional](#red-convolucional)
-	 3.1 [Conceptos Basicos](#red-convolucional)
-	 3.2 [Construccion de La Red Convolucional](#construccion-de-la-red-convolucional)
+ 2. [Procesamiento de Datos](#procesamiento-de-datos)<br/>
+    2.1 [Cargar los Datos](#cargar-los-datos)<br/>
+    2.2 [Normalizar](#normalizar)<br/>
+    2.3 [Asignacion de clases](#asignacion-de-clases)<br/>
+    2.4 [Dividir conjunto de entrenamiento y validación](#dividir-conjunto-de-entrenamiento-y-validación)
+ 3. [Red Convolucional](#red-convolucional)<br/>
+    3.1 [Conceptos Basicos](#red-convolucional)<br/>
+    3.2 [Construccion de La Red Convolucional](#construccion-de-la-red-convolucional)
  4. [Entrenamiento de la Red Convolucional](#entrenamiento-de-la-red-convolucional)
  5. [Evaluacion de la Red Convolucional](#evaluacion-de-la-red-convolucional)
   
@@ -403,4 +403,5 @@ for i in range(ultima_iteracion, ITERACIONES_ENTRENAMIENTO):
 		print('En la iteracion %d , Aciertos: [Entranamiento || Validacion] => %.4f || %.4f \n'% (i+1, train_accuracy, validation_accuracy))
 		print('Guardando modelo %d ....' %(i+1))
 		saver.save(sess, modelPath+NOMBRE_MODELO, global_step=i+1,write_meta_graph=True)
-
+```
+## Evaluacion de la Red Convolucional
