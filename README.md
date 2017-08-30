@@ -332,9 +332,6 @@ if ckpt and ckpt.model_checkpoint_path:
 		print("Sesion restaurada de: %s" % ckpt.model_checkpoint_path)
 	else:
 		print("No se encontro puntos de control.")
-
-ultima_iteracion = iterac_entren.eval(sess)
-print "Ultimo modelo en la iteracion: ", ultima_iteracion
 ```
 Hay 56.000 imágenes en el conjunto de entrenamiento. Se tarda mucho tiempo y consume bastantes recursos el intentar optimizar el entrenamiento para todas las imagenes. Por lo tanto, sólo se utiliza un pequeño lote de imágenes en cada iteración del optimizador. 
 ```python
@@ -383,10 +380,15 @@ train_val_File = open("TrainVal_ac.csv","a")
 
 **Comenzamos el entrenamiento**
 ```python
+cant_imag_entrenamient = entrenam_imagenes.shape[0]
+
+ultima_iteracion = iterac_entren.eval(sess)
+print "Ultimo modelo en la iteracion: ", ultima_iteracion
+
 #Desde la ultima iteracion hasta el ITERACIONES_ENTRENAMIENTO dado 
 for i in range(ultima_iteracion, ITERACIONES_ENTRENAMIENTO):
 	#Obtener nuevo subconjunto(batch) de (BATCH_SIZE =100) imagenes
-	batch_img_input, batch_img_class = siguiente_batch(BATCH_SIZE,entrenam_imagenes.shape[0])
+	batch_img_input, batch_img_class = siguiente_batch(BATCH_SIZE,cant_imag_entrenamiento)
 
 	# Entrenar el batch
 	sess.run(optimizador, feed_dict={x: batch_img_input, y_deseada: batch_img_class, keep_prob: DROPOUT})
