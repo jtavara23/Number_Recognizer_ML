@@ -167,7 +167,7 @@ x = tf.placeholder('float', shape=[None, tam_imagen],name= NOMBRE_TENSOR_ENTRADA
 # clases
 y_ = tf.placeholder('float', shape=[None, CANT_CLASES],name= NOMBRE_TENSOR_SALIDA_DESEADA)
 ```
-Las entradas y salidas de las capas convolucionales se hacen a traves de tensores de 4 dimensiones:
+Las entradas y salidas para las capas convolucionales se hacen a traves de tensores de 4 dimensiones:
   1. Cantidad images
   2. Altura de imagen
   3. Anchura de imagen
@@ -248,4 +248,71 @@ pool_conv2 = tf.nn.max_pool(act_conv2,
 print (pool_conv2.get_shape()) # => (56000, 7, 7, 64)
 ``` 
 **Capa Totalmente Conectada(Fully Connected)**
+Las entradas y salidas para las capas FC se hacen a traves de tensores de 2 dimensiones:
+  1. Cantidad Datos entrada
+  2. Cantidad Datos salida
+``` python
+forma = [7 * 7 * 64, 1024]
+pesos_fc1 = inicializar_pesos(shape = forma)
+biases_fc1 = inicializar_bias([1024])
+
+pool_conv2_flat = tf.reshape(pool_conv2, [-1, 7*7*64])
+# (56000, 7, 7, 64) => (56000, 3136)
+
+# Multiplicar matriz 'pool_conv2_flat' por matriz 'pesos_fc1' y sumar bias
+fc1 = tf.matmul(pool_conv2_flat, pesos_fc1) + biases_fc1
+#print (fc1.get_shape()) # => (56000, 1024)
+
+act_fc1 = tf.nn.relu(fc1)
+``` 
+
+**Aplicar Dropout**
+>Dropout es una técnica de regularización con el objetivo de reducir el sobreajuste que puede darse durante el entrenamiento de una rede neuronal. Consiste en asignar algunas neuronas a cero,para evitar que la red al entrenarse dependa demasiado en estas neuronas. Con esto se producen modelos neuronales robustos.
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29856355-e26d11d4-8d17-11e7-8abe-181b61fdd362.png"  width="480" />
+</p>
+
+``` python
+Creamos placeholder para que la probabilidad de la salida de una neurona se mantenga durante el dropout. Esto nos permite activar el dropout durante el entrenamiento y desactivarlo durante las pruebas.
+keep_prob = tf.placeholder('float',name=NOMBRE_PROBABILIDAD)
+#Aplicarmos dropout entre la capa FC y la capa de salida
+h_fc1_drop = tf.nn.dropout(act_fc1, keep_prob)
+``` 
+
+**Capa de Salida**
+Estima la probabilidad de que la imagen de entrada pertenezca a cada una de las 10 clases. Sin embargo, estas estimaciones son un poco difíciles de interpretar porque los números pueden ser muy pequeños o grandes, por lo que queremos normalizarlos para que cada elemento esté limitado entre cero y uno y los 10 elementos sumen a uno. Esto se calcula utilizando la función softmax y el resultado se almacena en y_calculada.
+``` python
+pesos_fc2 = inicializar_pesos([1024, CANT_CLASES])
+biases_fc2 = inicializar_bias([CANT_CLASES])
+fc2 = tf.matmul(h_fc1_drop, pesos_fc2) + biases_fc2
+
+y_calculada = tf.nn.softmax(fc2, name = NOMBRE_TENSOR_SALIDA_CALCULADA)
+print (y_calculada.get_shape()) # => (56000, 10)
+
+#El número de clase es el índice del elemento más grande.
+#[0.01, 0.04, 0.02, 0.5, 0.03 0.01, 0.05, 0.02, 0.3, 0.02] => 3
+clase_predecida = tf.argmax(y_calculada,dimension = 1)
+tf.add_to_collection("predictor", clase_predecida)	
+``` 
+
+**Funcion de Costo de Error**
+Definimos la función de costo de error para medir cuán mal desempeña nuestro modelo en imágenes con sus clases conocidas. El costo que queremos minimizar va a estar en función de lo calculado con lo deseado(real).
+``` python
+costo = -tf.reduce_sum(y_deseada * tf.log(y_calculada))
+``` 
+Y para minimizar este costo de error usamos el optimizador ADAM(es adecuado para problemas con muchos parámetros). Esta función mejorará iterativamente los parámetros(valores de los filtros[pesos] y bias de las neuronas)
+``` python
+#Creamos un placeholder para guardar las optimizaciones durante las iteraciones del entrenamiento
+iterac_entren = tf.Variable(0, name='iterac_entren', trainable=False)
+``` 
+Para la optimizacion se requiere que se inicialice con una **tasa de aprendizaje**.Esta determina la rapidez o la lentitud con que desea actualizar los parámetros. Por lo general, uno puede comenzar con una gran tasa de aprendizaje, y disminuir  la tasa de aprendizaje a medida que progresa la formación.
+``` python
+#TASA_APRENDIZAJE = 5e-4  #hasta 3000 iteraciones
+#TASA_APRENDIZAJE = 1e-4  #desde 3000 a (+)
+train_step = tf.train.AdamOptimizer(TASA_APRENDIZAJE).minimize(costo, global_step=iterac_entren)
+``` 
+
+
+
+
 
