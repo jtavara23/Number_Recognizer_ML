@@ -7,9 +7,9 @@
 2.3 Asignacion de clases<br />
 2.4 Dividir conjunto de entrenamiento y validación<br />
 
-3. Red Convolucional<br />
-3.1 Conceptos basicos
-3.2 Estructura del modelo<br />
+3. Red Convolucional<br/>
+3.1 Conceptos basicos<br/>
+3.2 Construccion de La Red Convolucional
 
 4. Evaluate the model <br />
 4.1 Training and validation curves<br />
@@ -151,8 +151,8 @@ Cuando se presenta una nueva imagen a la CNN, se filtra a través de las capas i
 <img src = "https://user-images.githubusercontent.com/18404919/29766302-eb5cc8d6-8ba3-11e7-9426-e2e9ae9bd8bf.png"  width="480" />
 </p>
 
-### 3.2 Construccion de La red Convolucional
-#### 3.2.1 Estructura del modelo
+### 3.2 Construccion de La Red Convolucional
+#### Estructura del modelo
 
 <p align="center">
 <img src = "https://user-images.githubusercontent.com/18404919/29766434-582acb70-8ba4-11e7-8efb-2c9e192d202d.png" />
@@ -165,7 +165,7 @@ Los tensores placeholder sirven como entrada al gráfico computacional de Tensor
 # imagenes
 x = tf.placeholder('float', shape=[None, tam_imagen],name= NOMBRE_TENSOR_ENTRADA)
 # clases
-y_ = tf.placeholder('float', shape=[None, CANT_CLASES],name= NOMBRE_TENSOR_SALIDA_DESEADA)
+y_deseada = tf.placeholder('float', shape=[None, CANT_CLASES],name= NOMBRE_TENSOR_SALIDA_DESEADA)
 ```
 Las entradas y salidas para las capas convolucionales se hacen a traves de tensores de 4 dimensiones:
   1. Cantidad images
@@ -175,19 +175,16 @@ Las entradas y salidas para las capas convolucionales se hacen a traves de tenso
 ``` python
 #las capas de convolucion esperan que las entradas sean encodificadas en tensores de 4D
 imagen = tf.reshape(x, [-1,altura_imagen, anchura_imagen,1])
-print (imagen.get_shape()) # =>(56000,28,28,1)
+#print (imagen.get_shape()) # =>(56000,28,28,1)
 ```
 
 **Fuciones de Inicializacion**<br/>
 ``` python
-# tf.truncated_normal: Outputs random values from a truncated normal distribution.
-# The generated values follow a normal distribution with specified standard deviation.
+# tf.truncated_normal: Emite valores aleatorios 
 def inicializar_pesos(shape):
 	initial = tf.truncated_normal(shape, stddev=0.1)
 	return tf.Variable(initial)
 
-# tf.constant: Creates a constant tensor. 
-# The resulting tensor is populated with values of type dtype, as specified by arguments value and shape
 def inicializar_bias(shape):
 	initial = tf.constant(0.1, shape=shape)
 	return tf.Variable(initial)
@@ -204,53 +201,53 @@ convolucion1 = tf.nn.conv2d(imagen,
                          pesos_conv1,
                          strides=[1, 1, 1, 1],
                          padding='SAME')
-print (convolucion1.get_shape()) # => (56000, 28,28, 32)
+#print (convolucion1.get_shape()) # => (56000, 28,28, 32)
 
 #el valor del bias es adicionado para cada resultado de convolucion
 convolucion1 += biases_conv1
 
 #funcion de activacion
 act_conv1 = tf.nn.relu(convolucion1)
-print(act_conv1.get_shape()) # => (56000, 28, 28, 32)
+#print(act_conv1.get_shape()) # => (56000, 28, 28, 32)
 
 pool_conv1 = tf.nn.max_pool(act_conv1,
                             ksize=[1, 2, 2, 1],
                             strides=[1, 2, 2, 1],
                             padding='SAME')
-print(pool_conv1.get_shape()) # => (56000, 14, 14, 32)
+#print(pool_conv1.get_shape()) # => (56000, 14, 14, 32)
 ``` 
+
 **Segunda Capa Convolucional**
 ``` python
-#Forma de los pesos del filtro
-#[tamanho_filtro,tamanho_filtro, canalEnt_img, cant_filtros]
 forma = [5, 5, 32, 64]
 pesos_conv2 = inicializar_pesos(shape = forma)
 biases_conv2 = inicializar_bias([64])
 
-#strides=[img,movx,movy ,filtro]
 convolucion2 = tf.nn.conv2d(pool_conv1,
                          pesos_conv2,
                          strides=[1, 1, 1, 1],
                          padding='SAME')
-print (convolucion2.get_shape()) # => (56000, 14,14, 64)
+#print (convolucion2.get_shape()) # => (56000, 14,14, 64)
 
 #el valor del bias es adicionado para cada resultado de convolucion
 convolucion2 += biases_conv2
 
 #funcion de activacion
 act_conv2 = tf.nn.relu(convolucion2)
-print (act_conv2.get_shape()) # => (56000, 14,14, 64)
+#print (act_conv2.get_shape()) # => (56000, 14,14, 64)
 
 pool_conv2 = tf.nn.max_pool(act_conv2,
                             ksize=[1, 2, 2, 1],
                             strides=[1, 2, 2, 1],
                             padding='SAME')
-print (pool_conv2.get_shape()) # => (56000, 7, 7, 64)
+#print (pool_conv2.get_shape()) # => (56000, 7, 7, 64)
 ``` 
+
 **Capa Totalmente Conectada(Fully Connected)**<br/>
 Las entradas y salidas para las capas FC se hacen a traves de tensores de 2 dimensiones:
   1. Cantidad Datos entrada
   2. Cantidad Datos salida
+  
 ``` python
 forma = [7 * 7 * 64, 1024]
 pesos_fc1 = inicializar_pesos(shape = forma)
@@ -273,7 +270,8 @@ act_fc1 = tf.nn.relu(fc1)
 </p>
 
 ``` python
-#Creamos un placeholder para que la probabilidad de la salida de una neurona se mantenga durante el dropout. Esto nos permite activar el dropout durante el entrenamiento y desactivarlo durante las pruebas.
+#Creamos un placeholder para que la probabilidad de la salida de una neurona se mantenga durante el dropout.
+#Esto nos permite activar el dropout durante el entrenamiento y desactivarlo durante las pruebas.
 keep_prob = tf.placeholder('float',name=NOMBRE_PROBABILIDAD)
 #Aplicarmos dropout entre la capa FC y la capa de salida
 h_fc1_drop = tf.nn.dropout(act_fc1, keep_prob)
@@ -302,7 +300,7 @@ costo = -tf.reduce_sum(y_deseada * tf.log(y_calculada))
 ``` 
 Y para minimizar este costo de error usamos el optimizador ADAM(es adecuado para problemas con muchos parámetros). Esta función mejorará iterativamente los parámetros(valores de los filtros[pesos] y bias de las neuronas)
 ``` python
-#Creamos un placeholder para guardar las optimizaciones durante las iteraciones del entrenamiento
+#Creamos un variable para guardar las optimizaciones durante las iteraciones del entrenamiento
 iterac_entren = tf.Variable(0, name='iterac_entren', trainable=False)
 ``` 
 Para la optimizacion se requiere que se inicialice con una **tasa de aprendizaje**.Esta determina la rapidez o la lentitud con que desea actualizar los parámetros. Por lo general, uno puede comenzar con una gran tasa de aprendizaje, y disminuir  la tasa de aprendizaje a medida que progresa la formación.
