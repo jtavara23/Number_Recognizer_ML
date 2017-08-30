@@ -1,4 +1,15 @@
 # Reconocedor De Numeros usando Redes Neuronales Convolucionales
+
+  * [Introduccion](#introduccion)
+  * [Procesamiento de Datos](#procesamiento-de-datos)
+    * [Cargar los Datos](#stdin)
+    * [Normalizar](#local-files)
+    * [Asignacion de clases](#remote-files)
+    * [Dividir conjunto de entrenamiento y validación](#multiple-files)
+  * [Red Convolucional](#usage)
+  * [Tests](#tests)
+  * [Dependency](#dependency)
+  
 1. Introduccion
 
 2. Procesamiento de Datos <br />
@@ -14,7 +25,8 @@
 4. Entrenamiento de la Red Convolucional <br />
 5. Evaluacion de la Red Convolucional<br />
 
-## 1. Introduccion
+Introduccion
+=========
 Si se desea aplicar el redes neuronales para el reconocimiento de imágenes, las redes neuronales convolucionales (CNN) es el camino a seguir. Ha estado barriendo el tablero en competiciones por los últimos años, pero quizás su primer gran éxito vino en los últimos 90's cuando Yann LeCun lo utilizó para resolver MNIST con el 99.5% de exactitud.<br/>
 Usando una red simple totalmente conectada (sin convolución) se podria alcanzar el 90-95%, lo cual no es muy buen resultado en este conjunto de datos. En contraste, la implementacion hecha en este proyecto es casi el estado del arte,llegando a obtener un **99.3%** de acierto <br/>
 La implementacion de este proyecto se realizó en el lenguaje Python.<br /> 
