@@ -247,7 +247,7 @@ pool_conv2 = tf.nn.max_pool(act_conv2,
                             padding='SAME')
 print (pool_conv2.get_shape()) # => (56000, 7, 7, 64)
 ``` 
-**Capa Totalmente Conectada(Fully Connected)**
+**Capa Totalmente Conectada(Fully Connected)**<br/>
 Las entradas y salidas para las capas FC se hacen a traves de tensores de 2 dimensiones:
   1. Cantidad Datos entrada
   2. Cantidad Datos salida
@@ -273,13 +273,13 @@ act_fc1 = tf.nn.relu(fc1)
 </p>
 
 ``` python
-Creamos placeholder para que la probabilidad de la salida de una neurona se mantenga durante el dropout. Esto nos permite activar el dropout durante el entrenamiento y desactivarlo durante las pruebas.
+#Creamos un placeholder para que la probabilidad de la salida de una neurona se mantenga durante el dropout. Esto nos permite activar el dropout durante el entrenamiento y desactivarlo durante las pruebas.
 keep_prob = tf.placeholder('float',name=NOMBRE_PROBABILIDAD)
 #Aplicarmos dropout entre la capa FC y la capa de salida
 h_fc1_drop = tf.nn.dropout(act_fc1, keep_prob)
 ``` 
 
-**Capa de Salida**
+**Capa de Salida**<br/>
 Estima la probabilidad de que la imagen de entrada pertenezca a cada una de las 10 clases. Sin embargo, estas estimaciones son un poco difíciles de interpretar porque los números pueden ser muy pequeños o grandes, por lo que queremos normalizarlos para que cada elemento esté limitado entre cero y uno y los 10 elementos sumen a uno. Esto se calcula utilizando la función softmax y el resultado se almacena en y_calculada.
 ``` python
 pesos_fc2 = inicializar_pesos([1024, CANT_CLASES])
@@ -295,7 +295,7 @@ clase_predecida = tf.argmax(y_calculada,dimension = 1)
 tf.add_to_collection("predictor", clase_predecida)	
 ``` 
 
-**Funcion de Costo de Error**
+**Funcion de Costo de Error**<br/>
 Definimos la función de costo de error para medir cuán mal desempeña nuestro modelo en imágenes con sus clases conocidas. El costo que queremos minimizar va a estar en función de lo calculado con lo deseado(real).
 ``` python
 costo = -tf.reduce_sum(y_deseada * tf.log(y_calculada))
@@ -309,10 +309,15 @@ Para la optimizacion se requiere que se inicialice con una **tasa de aprendizaje
 ``` python
 #TASA_APRENDIZAJE = 5e-4  #hasta 3000 iteraciones
 #TASA_APRENDIZAJE = 1e-4  #desde 3000 a (+)
-train_step = tf.train.AdamOptimizer(TASA_APRENDIZAJE).minimize(costo, global_step=iterac_entren)
+optimizador = tf.train.AdamOptimizer(TASA_APRENDIZAJE).minimize(costo, global_step=iterac_entren)
 ``` 
 
-
-
-
+**Evaluacion de acierto**<br/>
+``` python
+#Con un vector de booleanos sabremos si la clase calculada es igual a la clase verdadera de cada imagen.
+prediccion_correcta = tf.equal(tf.argmax(y_calculada,1), tf.argmax(y_deseada,1))
+#Se calcula la precisión de clasificación convirtiendo los datos boolenados a flotantes
+#de modo que False se convierte en 0 y True se convierte en 1, para luego calcular el promedio de estos números.
+acierto = tf.reduce_mean(tf.cast(prediccion_correcta, 'float'))
+``` 
 
