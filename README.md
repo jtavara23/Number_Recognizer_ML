@@ -150,9 +150,32 @@ Cuando se presenta una nueva imagen a la CNN, se filtra a través de las capas i
 <p align="center">
 <img src = "https://user-images.githubusercontent.com/18404919/29766302-eb5cc8d6-8ba3-11e7-9426-e2e9ae9bd8bf.png"  width="480" />
 </p>
-Para mas información, visitar [aquí] (http://brohrer.github.io/how_convolutional_neural_networks_work.html)
 
-### 3.2 Estructura del modelo
+### 3.2 Construccion de La red Convolucional
+#### 3.2.1 Estructura del modelo
+
+**Configuracion de parametros**
+Los tensores placeholder sirven como entrada al gráfico computacional de TensorFlow que podemos cambiar cada vez que ejecutamos el gráfico.
+None significa que el tensor puede contener un número arbitrario de imágenes, donde cada imagen es un vector de longitud dada.
+``` python
+# imagenes
+x = tf.placeholder('float', shape=[None, tam_imagen],name= NOMBRE_TENSOR_ENTRADA)
+# clases
+y_ = tf.placeholder('float', shape=[None, CANT_CLASES],name= NOMBRE_TENSOR_SALIDA_DESEADA)
+```
+Las entradas y salidas de las capas convolucionales se hacen a traves de tensores de 4 dimensiones:
+  1. Cantidad images
+  2. Altura de imagen
+  3. Anchura de imagen
+  4. Canales por imagen(de color/ de filtro)
+``` python
+#las capas de convolucion esperan que las entradas sean encodificadas en tensores de 4D
+image = tf.reshape(x, [-1,altura_imagen, anchura_imagen,1])
+print (image.get_shape()) # =>(56000,28,28,1)
+```
 <p align="center">
 <img src = "https://user-images.githubusercontent.com/18404919/29766434-582acb70-8ba4-11e7-8efb-2c9e192d202d.png" />
 </p>
+
+
+
