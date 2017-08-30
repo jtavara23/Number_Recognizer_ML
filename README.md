@@ -11,12 +11,8 @@
 3.1 Conceptos basicos<br/>
 3.2 Construccion de La Red Convolucional
 
-4. Evaluate the model <br />
-4.1 Training and validation curves<br />
-
-5. Prediction and submition<br />
-5.1 Predict and Submit results<br />
-5.2 Matriz de confusion
+4. Entrenamiento de la Red Convolucional <br />
+5. Evaluacion de la Red Convolucional<br />
 
 ## 1. Introduccion
 Si se desea aplicar el redes neuronales para el reconocimiento de imágenes, las redes neuronales convolucionales (CNN) es el camino a seguir. Ha estado barriendo el tablero en competiciones por los últimos años, pero quizás su primer gran éxito vino en los últimos 90's cuando Yann LeCun lo utilizó para resolver MNIST con el 99.5% de exactitud.<br/>
@@ -46,27 +42,28 @@ Es una buena base de datos para las personas que quieren probar técnicas de apr
 ###  2.1 Cargar los Datos 
 ```python 
 datasetTraining = pd.read_csv(path+'datasets/60ktrain.csv')
-images = datasetTraining.iloc[:,1:].values
-images = images.astype(np.float)
+imagenes = datasetEntrenamiento.iloc[:,1:].values
+imagenes = imagenes.astype(np.float)
 ```
 
 ###  2.2 Normalizar
 ```python 
 # Normalizar, convertir de [0:255] => [0.0:1.0]
-images = np.multiply(images, 1.0 / 255.0)	
+imagenes = np.multiply(imagenes, 1.0 / 255.0)	
 ```
 ### 2.3 Asignacion de clases
 Para la mayoría de los problemas de clasificación, se utilizan "vectores de activacion". Un vector de activacion es un vector que contiene un único elemento igual a 1 y el resto de los elementos igual a 0. En este caso, el n-ésimo dígito se representa como un vector cero con 1 en la posición n-ésima.<br />
 ```python 
 #Organizar las clases de las imagenes en un solo vector
-labels_flat = datasetTraining.iloc[:,0].values.ravel()
+clases_flat = datasetEntrenamiento.iloc[:,0].values.ravel()
+
 # convertir tipo de clases de escalares a vectores de activacion de 1s
 # 0 => [1 0 0 0 0 0 0 0 0 0]
 # 1 => [0 1 0 0 0 0 0 0 0 0]
 # ...
 # 9 => [0 0 0 0 0 0 0 0 0 1]
-classes = activation_vector(labels_flat, CLASS_COUNT)
-classes = classes.astype(np.uint8)
+clases = activation_vector(clases_flat, CANT_CLASES)
+clases = clases.astype(np.uint8)
 ```
 ```python
 def activation_vector(labels_dense, num_classes):
@@ -80,14 +77,14 @@ def activation_vector(labels_dense, num_classes):
 Por último, reservamos algunos datos para su validación. Es esencial en modelos de ML tener un conjunto de datos independiente que no participa en el entrenamiento y se utiliza para asegurarse de que lo que hemos aprendido en realidad se puede generalizar.
 ``` python
 #cantidad de imagenes del conjunto de entrenamiento separadas para validar
-VALIDATION_SIZE = 4000
+TAM_VALIDACION = 4000
 
-validation_images = images[:VALIDATION_SIZE]
-validation_labels = classes[:VALIDATION_SIZE]
+validac_imagenes = imagenes[:TAM_VALIDACION]
+validac_clases = clases[:TAM_VALIDACION]
 
-train_images = images[VALIDATION_SIZE:]
-train_labels = classes[VALIDATION_SIZE:]
-train_labels_flat = labels_flat[VALIDATION_SIZE:]
+entrenam_imagenes = imagenes[TAM_VALIDACION:]
+entrenam_clases = clases[TAM_VALIDACION:]
+entrenam_clases_flat = clases_flat[TAM_VALIDACION:]
 ```
 ## 3. Red Convolucional
 ### 3.1 Conceptos Basicos
@@ -245,8 +242,8 @@ pool_conv2 = tf.nn.max_pool(act_conv2,
 
 **Capa Totalmente Conectada(Fully Connected)**<br/>
 Las entradas y salidas para las capas FC se hacen a traves de tensores de 2 dimensiones:
-  1. Cantidad Datos entrada
-  2. Cantidad Datos salida
+	1. Cantidad Datos entrada
+	2. Cantidad Datos salida
   
 ``` python
 forma = [7 * 7 * 64, 1024]
@@ -318,4 +315,89 @@ prediccion_correcta = tf.equal(tf.argmax(y_calculada,1), tf.argmax(y_deseada,1))
 #de modo que False se convierte en 0 y True se convierte en 1, para luego calcular el promedio de estos números.
 acierto = tf.reduce_mean(tf.cast(prediccion_correcta, 'float'))
 ``` 
+
+## 4. Entrenamiento de la Red Convolucional 
+Una vez que el modelo de la red haya sido creado a atraves de un grafo de tensorflow, necesitamos crear una sesion tensorflow el cual es usado para ejecutar el modelo creado.
+``` python
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+``` 
+Tambien es necesario guardar el modelo para usarlo posteriormente en la evaluacion de datos o continuar entrenando la red.
+``` python
+saver = tf.train.Saver()
+modelPath = '/media/josuetavara/Gaston/mnist/mnistDS/CNN/models/'
+ckpt = tf.train.get_checkpoint_state(modelPath + '.')
+if ckpt and ckpt.model_checkpoint_path:
+		saver.restore(sess, ckpt.model_checkpoint_path)
+		print("Sesion restaurada de: %s" % ckpt.model_checkpoint_path)
+	else:
+		print("No se encontro puntos de control.")
+
+ultima_iteracion = iterac_entren.eval(sess)
+print "Ultimo modelo en la iteracion: ", ultima_iteracion
+```
+Hay 56.000 imágenes en el conjunto de entrenamiento. Se tarda mucho tiempo y consume bastantes recursos el intentar optimizar el entrenamiento para todas las imagenes. Por lo tanto, sólo se utiliza un pequeño lote de imágenes en cada iteración del optimizador. 
+```python
+BATCH_SIZE = 100
+#una epoca culmina cuando se ha entrenado a todas las imagenes del conj.Entrenamiento
+epocas_completadas = 0 
+indice_en_epoca = 0
+```
+```python
+
+def siguiente_batch(batch_size,cant_imag_entrenamiento ):
+    
+	#cant_imag_entrenamiento= 56000
+	global entrenam_imagenes
+	global entrenam_clases
+	global entrenam_clases_flat
+	global indice_en_epoca
+	global epocas_completadas
+
+	comienzo = indice_en_epoca
+	indice_en_epoca += batch_size
+
+	# Cuando ya se han utilizado todos los datos de entrenamiento, se reordena aleatoriamente.
+	if indice_en_epoca > cant_imag_entrenamiento:
+		# epoca finalizada
+		epocas_completadas += 1
+		# barajear los datos
+		perm = np.arange(cant_imag_entrenamiento)
+		np.random.shuffle(perm)
+		#perm = stratified_shuffle(entrenam_clases_flat, 10)
+		entrenam_imagenes = entrenam_imagenes[perm]
+		entrenam_clases = entrenam_clases[perm]
+		entrenam_clases_flat = entrenam_clases_flat[perm]
+		# comenzar nueva epoca
+		comienzo = 0
+		indice_en_epoca = batch_size
+		assert batch_size <= cant_imag_entrenamiento
+	end = indice_en_epoca
+	return entrenam_imagenes[comienzo:end], entrenam_clases[comienzo:end]
+```
+
+Creamos un archivo para guardar los aciertos de Entrenamiento y Validacion
+```python
+train_val_File = open("TrainVal_ac.csv","a")
+```
+
+**Comenzamos el entrenamiento**
+```python
+#Desde la ultima iteracion hasta el ITERACIONES_ENTRENAMIENTO dado 
+for i in range(ultima_iteracion, ITERACIONES_ENTRENAMIENTO):
+	#Obtener nuevo subconjunto(batch) de (BATCH_SIZE =100) imagenes
+	batch_img_input, batch_img_class = siguiente_batch(BATCH_SIZE,entrenam_imagenes.shape[0])
+
+	# Entrenar el batch
+	sess.run(optimizador, feed_dict={x: batch_img_input, y_deseada: batch_img_class, keep_prob: DROPOUT})
+
+	# Observar el progreso cada 'CHKP_REVISAR_PROGRESO' iteraciones
+	if(i+1) % CHKP_REVISAR_PROGRESO == 0 :
+		train_accuracy, validation_accuracy = chequear_progreso(sess, acierto, batch_img_input, batch_img_class, i)
+		print('En la iteracion %d , Aciertos: [Entrenamiento || Validacion] => %.4f || %.4f '% (i+1, train_accuracy, validation_accuracy))
+	#Crear 'punto de control' cuando se llego a las CHKP_GUARDAR_MODELO
+	if (i+1) % CHKP_GUARDAR_MODELO == 0 :
+		#print('En la iteracion %d , Aciertos: [Entranamiento || Validacion] => %.4f || %.4f \n'% (i+1, train_accuracy, validation_accuracy))
+		print('Guardando modelo %d ....' %(i+1))
+		saver.save(sess, modelPath+NOMBRE_MODELO, global_step=i+1,write_meta_graph=True)
 
