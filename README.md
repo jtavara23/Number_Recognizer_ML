@@ -1,32 +1,20 @@
 # Reconocedor De Numeros usando Redes Neuronales Convolucionales
 
-  * [Introduccion](#introduccion)
-  * [Procesamiento de Datos](#procesamiento-de-datos)
-    * [Cargar los Datos](#stdin)
-    * [Normalizar](#local-files)
-    * [Asignacion de clases](#remote-files)
-    * [Dividir conjunto de entrenamiento y validación](#multiple-files)
-  * [Red Convolucional](#usage)
-  * [Tests](#tests)
-  * [Dependency](#dependency)
+ 1. [Introduccion](#introduccion)
+ 2. [Procesamiento de Datos](#procesamiento-de-datos)
+   2.1 [Cargar los Datos](#cargar-los-datos)
+	 2.2 [Normalizar](#normalizar)
+	 2.3 [Asignacion de clases](#asignacion-de-clases)
+	 2.4 [Dividir conjunto de entrenamiento y validación](#dividir-conjunto-de-entrenamiento-y-validación)
+ 3. [Red Convolucional](#red-convolucional)
+	 3.1 [Conceptos Basicos](#red-convolucional)
+	 3.2 [Construccion de La Red Convolucional](#construccion-de-la-red-convolucional)
+ 4. [Entrenamiento de la Red Convolucional](#entrenamiento-de-la-red-convolucional)
+ 5. [Evaluacion de la Red Convolucional](#evaluacion-de-la-red-convolucional)
   
-1. Introduccion
 
-2. Procesamiento de Datos <br />
-2.1 Cargar los Datos<br />
-2.2 Normalizar<br />
-2.3 Asignacion de clases<br />
-2.4 Dividir conjunto de entrenamiento y validación<br />
+## Introduccion
 
-3. Red Convolucional<br/>
-3.1 Conceptos basicos<br/>
-3.2 Construccion de La Red Convolucional
-
-4. Entrenamiento de la Red Convolucional <br />
-5. Evaluacion de la Red Convolucional<br />
-
-Introduccion
-=========
 Si se desea aplicar el redes neuronales para el reconocimiento de imágenes, las redes neuronales convolucionales (CNN) es el camino a seguir. Ha estado barriendo el tablero en competiciones por los últimos años, pero quizás su primer gran éxito vino en los últimos 90's cuando Yann LeCun lo utilizó para resolver MNIST con el 99.5% de exactitud.<br/>
 Usando una red simple totalmente conectada (sin convolución) se podria alcanzar el 90-95%, lo cual no es muy buen resultado en este conjunto de datos. En contraste, la implementacion hecha en este proyecto es casi el estado del arte,llegando a obtener un **99.3%** de acierto <br/>
 La implementacion de este proyecto se realizó en el lenguaje Python.<br /> 
@@ -43,7 +31,7 @@ import time
 from datetime import timedelta
 from funcionesAuxiliares import  display,activation_vector
 ```
-## 2. Procesamiento de Datos
+## Procesamiento de Datos 
 Link: http://yann.lecun.com/exdb/mnist/
 >La base de datos MNIST("Modified National Institute of Standards and Technology") de dígitos manuscritos, disponible en esta página, tiene un conjunto de entrenamiento de 60.000 ejemplos y un conjunto de prueba de 10.000 ejemplos. Es un subconjunto de un conjunto más grande disponible de NIST. Los dígitos se han normalizado de tamaño y se han centrado en una imagen de tamaño fijo.
 Es una buena base de datos para las personas que quieren probar técnicas de aprendizaje y métodos de reconocimiento de patrones en los datos del mundo real, ya que se evita el esfuerzo de preprocesar y formatear las imagenes.<br />
@@ -51,19 +39,19 @@ Es una buena base de datos para las personas que quieren probar técnicas de apr
   <img src=https://user-images.githubusercontent.com/18404919/29759317-4b838534-8b80-11e7-9533-ed582f7ef037.png>
 </p>
 
-###  2.1 Cargar los Datos 
+### Cargar los Datos 
 ```python 
 datasetTraining = pd.read_csv(path+'datasets/60ktrain.csv')
 imagenes = datasetEntrenamiento.iloc[:,1:].values
 imagenes = imagenes.astype(np.float)
 ```
 
-###  2.2 Normalizar
+### Normalizar
 ```python 
 # Normalizar, convertir de [0:255] => [0.0:1.0]
 imagenes = np.multiply(imagenes, 1.0 / 255.0)	
 ```
-### 2.3 Asignacion de clases
+### Asignacion de clases
 Para la mayoría de los problemas de clasificación, se utilizan "vectores de activacion". Un vector de activacion es un vector que contiene un único elemento igual a 1 y el resto de los elementos igual a 0. En este caso, el n-ésimo dígito se representa como un vector cero con 1 en la posición n-ésima.<br />
 ```python 
 #Organizar las clases de las imagenes en un solo vector
@@ -85,7 +73,7 @@ def activation_vector(labels_dense, num_classes):
     labels_one_hot.flat[index_offset + labels_dense.ravel()] = 1
     return labels_one_hot
 ```
-### 2.4 Dividir conjunto de entrenamiento y validación
+### Dividir conjunto de entrenamiento y validación
 Por último, reservamos algunos datos para su validación. Es esencial en modelos de ML tener un conjunto de datos independiente que no participa en el entrenamiento y se utiliza para asegurarse de que lo que hemos aprendido en realidad se puede generalizar.
 ``` python
 #cantidad de imagenes del conjunto de entrenamiento separadas para validar
@@ -98,8 +86,8 @@ entrenam_imagenes = imagenes[TAM_VALIDACION:]
 entrenam_clases = clases[TAM_VALIDACION:]
 entrenam_clases_flat = clases_flat[TAM_VALIDACION:]
 ```
-## 3. Red Convolucional
-### 3.1 Conceptos Basicos
+## Red Convolucional
+### Conceptos Basicos
 Las redes neuronales convolucionales (CNNs) son una variación biológicamente inspirada de los perceptrones multicapa (MLPs). A diferencia de MLPs donde cada neurona tiene un vector de peso separado, las neuronas en las CNNs comparten pesos.<br />
 Utilizando la estrategia de compartir de pesos, las neuronas son capaces de realizar **convoluciones** en los pixels de una imagen utilizando un **filtro de convolución(kernel)** el cual está formado por pesoss.</br> 
 
@@ -160,7 +148,7 @@ Cuando se presenta una nueva imagen a la CNN, se filtra a través de las capas i
 <img src = "https://user-images.githubusercontent.com/18404919/29766302-eb5cc8d6-8ba3-11e7-9426-e2e9ae9bd8bf.png"  width="480" />
 </p>
 
-### 3.2 Construccion de La Red Convolucional
+### Construccion de La Red Convolucional
 #### Estructura del modelo
 
 <p align="center">
@@ -328,7 +316,7 @@ prediccion_correcta = tf.equal(tf.argmax(y_calculada,1), tf.argmax(y_deseada,1))
 acierto = tf.reduce_mean(tf.cast(prediccion_correcta, 'float'))
 ``` 
 
-## 4. Entrenamiento de la Red Convolucional 
+## Entrenamiento de la Red Convolucional 
 Una vez que el modelo de la red haya sido creado a atraves de un grafo de tensorflow, necesitamos crear una sesion tensorflow el cual es usado para ejecutar el modelo creado.
 ``` python
 sess = tf.Session()
