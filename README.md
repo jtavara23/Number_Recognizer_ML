@@ -419,7 +419,6 @@ dataset = pd.read_csv(path+'datasets/10ktest.csv')
 imagenes = dataset.iloc[:,1:].values
 imagenes = imagenes.astype(np.float)
 
-
 # Normalizar, convertir de [0:255] => [0.0:1.0]
 imagenes = np.multiply(imagenes, 1.0 / 255.0)
 #Organizar las clases de las imagenes en un solo vector
@@ -436,7 +435,7 @@ numero_clases = np.unique(clases_flat).shape[0]
 labels = activation_vector(clases_flat, numero_clases)
 labels = labels.astype(np.uint8)
 ```
-Restauramos el grafo y el ultimo punto de control con los datos del grafo
+Restauramos el grafo en nueva nueva sesion y el ultimo punto de control con los datos del grafo
 ```python
 with tf.Session() as sess:
 	sess.run(tf.global_variables_initializer())
