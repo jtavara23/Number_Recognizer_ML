@@ -335,9 +335,9 @@ if ckpt and ckpt.model_checkpoint_path:
 ```
 Hay 56.000 imágenes en el conjunto de entrenamiento. Se tarda mucho tiempo y consume bastantes recursos el intentar optimizar el entrenamiento para todas las imagenes. Por lo tanto, sólo se utiliza un pequeño lote de imágenes en cada iteración del optimizador. 
 ```python
-BATCH_SIZE = 100
+BATCH_SIZE = 200
 #una epoca culmina cuando se ha entrenado a todas las imagenes del conj.Entrenamiento
-#Para 56000 , con BATCH_SIZE = 100 * 560 iteraciones
+#Para 56000 , con 200 imagenes * 280 iteraciones
 epocas_completadas = 0 
 indice_en_epoca = 0
 ```
@@ -381,7 +381,7 @@ train_val_File = open("TrainVal_ac.csv","a")
 
 **Comenzamos el entrenamiento**
 ```python
-#Con BATCH_SIZE=100 , cada 560 iteraciones se completa una epoca
+#Con BATCH_SIZE=200 images, cada 280 iteraciones se completa una epoca
 ITERACIONES_ENTRENAMIENTO = 2800 
 CHKP_GUARDAR_MODELO = 560 #cada 560 iteraciones
 CHKP_REVISAR_PROGRESO = CHKP_GUARDAR_MODELO # acuracia del conj. validacion
