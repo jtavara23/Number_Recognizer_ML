@@ -78,8 +78,8 @@ Por último, reservamos algunos datos para su validación. Es esencial en modelo
 ``` python
 #cantidad de imagenes del conjunto de entrenamiento separadas para validar
 TAM_VALIDACION = 4000
-
-validac_imagenes = imagenes[:TAM_VALIDACION]
+#56000 imagenes para entrenar
+validac_imagenes = imagenes[:TAM_VALIDACION] 
 validac_clases = clases[:TAM_VALIDACION]
 
 entrenam_imagenes = imagenes[TAM_VALIDACION:]
@@ -300,7 +300,7 @@ Y para minimizar este costo de error usamos el optimizador ADAM(es adecuado para
 #Creamos un variable para guardar las optimizaciones durante las iteraciones del entrenamiento
 iterac_entren = tf.Variable(0, name='iterac_entren', trainable=False)
 ``` 
-Para la optimizacion se requiere que se inicialice con una **tasa de aprendizaje**.Esta determina la rapidez o la lentitud con que desea actualizar los parámetros. Por lo general, uno puede comenzar con una gran tasa de aprendizaje, y disminuir  la tasa de aprendizaje a medida que progresa la formación.
+Para la optimizacion se requiere que se inicialice con una **tasa de aprendizaje**.Esta determina la rapidez o la lentitud con que desea actualizar los parámetros. Por lo general, uno puede comenzar con una gran tasa de aprendizaje, y disminuir  la tasa de aprendizaje a medida que progresa el entrenamiento.
 ``` python
 #TASA_APRENDIZAJE = 5e-4  #hasta 3000 iteraciones
 #TASA_APRENDIZAJE = 1e-4  #desde 3000 a (+)
@@ -337,6 +337,7 @@ Hay 56.000 imágenes en el conjunto de entrenamiento. Se tarda mucho tiempo y co
 ```python
 BATCH_SIZE = 100
 #una epoca culmina cuando se ha entrenado a todas las imagenes del conj.Entrenamiento
+#Para 56000 , con BATCH_SIZE = 100 * 560 iteraciones
 epocas_completadas = 0 
 indice_en_epoca = 0
 ```
@@ -380,6 +381,12 @@ train_val_File = open("TrainVal_ac.csv","a")
 
 **Comenzamos el entrenamiento**
 ```python
+#Con BATCH_SIZE=100 , cada 560 iteraciones se completa una epoca
+ITERACIONES_ENTRENAMIENTO = 2800 
+CHKP_GUARDAR_MODELO = 560 #cada 560 iteraciones
+CHKP_REVISAR_PROGRESO = CHKP_GUARDAR_MODELO # acuracia del conj. validacion
+```
+```python
 cant_imag_entrenamiento = entrenam_imagenes.shape[0]
 
 ultima_iteracion = iterac_entren.eval(sess)
@@ -405,3 +412,36 @@ for i in range(ultima_iteracion, ITERACIONES_ENTRENAMIENTO):
 		saver.save(sess, modelPath+NOMBRE_MODELO, global_step=i+1,write_meta_graph=True)
 ```
 ## Evaluacion de la Red Convolucional
+Leemos el dataset de evaluacion y procesamos los datos 
+``` python
+path = '/media/josuetavara/Gaston/mnist/mnistDS/'
+dataset = pd.read_csv(path+'datasets/10ktest.csv')
+imagenes = dataset.iloc[:,1:].values
+imagenes = imagenes.astype(np.float)
+
+
+# Normalizar, convertir de [0:255] => [0.0:1.0]
+imagenes = np.multiply(imagenes, 1.0 / 255.0)
+#Organizar las clases de las imagenes en un solo vector
+clases_flat = dataset.iloc[:,0].values
+
+numero_clases = np.unique(clases_flat).shape[0]
+#print('number of labes => {0}'.format(numero_clases))
+
+# convertir tipo de clases de escalares a vectores de activacion de 1s
+# 0 => [1 0 0 0 0 0 0 0 0 0]
+# 1 => [0 1 0 0 0 0 0 0 0 0]
+# ...
+# 9 => [0 0 0 0 0 0 0 0 0 1]
+labels = activation_vector(clases_flat, numero_clases)
+labels = labels.astype(np.uint8)
+```
+Restauramos el grafo y el ultimo punto de control con los datos del grafo
+```python
+with tf.Session() as sess:
+	sess.run(tf.global_variables_initializer())
+	saver = tf.train.import_meta_graph(path + 'CNN/models/model-100.meta')
+	saver.restore(sess, tf.train.latest_checkpoint(path + 'CNN/models/.'))
+	print "Modelo restaurado",tf.train.latest_checkpoint(path + 'CNN/models/.')
+```
+
