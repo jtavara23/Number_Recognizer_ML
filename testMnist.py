@@ -7,7 +7,7 @@ import math
 import os
 
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
-BATCH_SIZE = 100
+BATCH_SIZE = 200
 NOMBRE_TENSOR_ENTRADA = 'inputX'
 NOMBRE_TENSOR_SALIDA_DESEADA = "outputYDeseada"
 NOMBRE_PROBABILIDAD = 'mantener_probabilidad'
@@ -38,7 +38,7 @@ if __name__ == "__main__":
 	# Restauramos el ultimo punto de control
 	with tf.Session() as sess:
 		sess.run(tf.global_variables_initializer())
-		saver = tf.train.import_meta_graph(path + 'CNN/models/model-100.meta')
+		saver = tf.train.import_meta_graph(path + 'CNN/models/model-280.meta')
 		saver.restore(sess, tf.train.latest_checkpoint(path + 'CNN/models/.'))
 		print "Modelo restaurado",tf.train.latest_checkpoint(path + 'CNN/models/.')
 		
@@ -75,10 +75,10 @@ if __name__ == "__main__":
 		# Cree una matriz booleana
 		correct = (clases_deseadas == clases_pred)
 		
-		# Se Calcula el número de imágenes correctamente clasificadas.
+		# Se calcula el numero de imagenes correctamente clasificadas.
 		correct_sum = correct.sum()
 
-		# La precisión de la clasificación es el número de imgs clasificadas correctamente
+		# La precision de la clasificacion es el numero de imgs clasificadas correctamente
 		acc = float(correct_sum) / cant_evaluar
 
 		msg = "Acierto en el conjunto de Testing: {0:.1%} ({1} / {2})"
