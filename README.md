@@ -445,3 +445,55 @@ with tf.Session() as sess:
 	print "Modelo restaurado",tf.train.latest_checkpoint(path + 'CNN/models/.')
 ```
 
+``` python
+#Tensor predictor para clasificar la imagen
+predictor = tf.get_collection("predictor")[0]
+#cantidad de imagenes a clasificar
+cant_evaluar = (imagenes.shape[0])
+
+clases_pred = np.zeros(shape=cant_evaluar, dtype=np.int)
+
+
+start = 0
+print "Prediciendo clases..."
+while start < cant_evaluar:
+	end = min(start + BATCH_SIZE, cant_evaluar)
+	
+	images_evaluar = imagenes[start:end, :]
+	clases_evaluar = labels[start:end, :]
+
+	#Introduce los datos para ser usados en un tensor
+	feed_dictx = {NOMBRE_TENSOR_ENTRADA+":0": images_evaluar, NOMBRE_TENSOR_SALIDA_DESEADA+":0": clases_evaluar,NOMBRE_PROBABILIDAD+":0":1.0}
+
+	# Calcula la clase predecida , atraves del tensor predictor
+	clases_pred[start:end] = sess.run(predictor, feed_dict=feed_dictx)
+	
+	# Asigna el indice final del batch actual
+	# como comienzo para el siguiente batch 
+	start = end
+
+# Convenience variable for the true class-numbers of the test-set.
+clases_deseadas = clases_flat
+
+# Cree una matriz booleana
+correct = (clases_deseadas == clases_pred)
+
+# Se Calcula el número de imágenes correctamente clasificadas.
+correct_sum = correct.sum()
+
+# La precisión de la clasificación es el número de imgs clasificadas correctamente
+acc = float(correct_sum) / cant_evaluar
+
+msg = "Acierto en el conjunto de Testing: {0:.1%} ({1} / {2})"
+print(msg.format(acc, correct_sum, cant_evaluar))
+```
+Muestra algunas imagenes que no fueron clasificadas correctamente
+```python
+plot_example_errors(clases_pred=clases_pred, correct=correct,imagenes = imagenes, clases_flat=clases_flat)
+```
+
+```python
+print("Mostrando Matriz de Confusion")
+plot_confusion_matrix(clases_pred, clases_deseadas,numero_clases)
+plt.show()
+```
