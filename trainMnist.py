@@ -17,22 +17,26 @@ NOMBRE_TENSOR_SALIDA_CALCULADA = 'outputYCalculada'
 NOMBRE_TENSOR_SALIDA_DESEADA = "outputYDeseada"
 
 
+
+#cantidad de imagenes del conjunto de entrenamiento separadas para validar
+TAM_VALIDACION = 4000
+#clases a clasificar
+CANT_CLASES = 10
 TASA_APRENDIZAJE = 5e-4 #hasta 3000 iteraciones
 #TASA_APRENDIZAJE = 1e-4  #desde 3000 a (+)
-ITERACIONES_ENTRENAMIENTO = 200
 
-CHKP_GUARDAR_MODELO = 100
+
+# entrenamiento es ejecutado seleccionando subconjuntos de imagenes
+BATCH_SIZE = 200
+
+#cada con 200 de batch, en 280 iteraciones se completa una epoca
+ITERACIONES_ENTRENAMIENTO = 280 
+
+CHKP_GUARDAR_MODELO = 280 #cada 280 iteraciones
 CHKP_REVISAR_PROGRESO = CHKP_GUARDAR_MODELO
 
 DROPOUT = 0.5
 
-# entrenamiento es ejecutado seleccionando subconjuntos de imagenes
-BATCH_SIZE = 100
-
-#cantidad de imagenes del conjunto de entrenamiento separadas para validar
-TAM_VALIDACION = 4000
-
-CANT_CLASES = 10
 
 
 
@@ -149,15 +153,11 @@ def procesamiento(datasetEntrenamiento):
 	return tam_imagen, entrenam_imagenes,entrenam_clases,entrenam_clases_flat, validac_imagenes,validac_clases
 	
 
-# weights initialization.
-# tf.truncated_normal: Outputs random values from a truncated normal distribution.
-# The generated values follow a normal distribution with specified standard deviation.
 def inicializar_pesos(shape):
 	initial = tf.truncated_normal(shape, stddev=0.1)
 	return tf.Variable(initial)
 
-# tf.constant: Creates a constant tensor. 
-# The resulting tensor is populated with values of type dtype, as specified by arguments value and shape
+
 def inicializar_bias(shape):
 	initial = tf.constant(0.1, shape=shape)
 	return tf.Variable(initial)
@@ -348,7 +348,7 @@ if __name__ == "__main__":
 			print('En la iteracion %d , Aciertos: [Entrenamiento || Validacion] => %.4f || %.4f '% (i+1, train_accuracy, validation_accuracy))
 		#Crear 'punto de control' cuando se llego a las CHKP_GUARDAR_MODELO iteraciones
 		if (i+1) % CHKP_GUARDAR_MODELO == 0 :
-			print('En la iteracion %d , Aciertos: [Entranamiento || Validacion] => %.4f || %.4f \n'% (i+1, train_accuracy, validation_accuracy))
+
 			print('Guardando modelo %d ....' %(i+1))
 			saver.save(sess, modelPath+NOMBRE_MODELO, global_step=i+1,write_meta_graph=True)
 	
