@@ -447,3 +447,30 @@ for i in range(ultima_iteracion, ITERACIONES_ENTRENAMIENTO):
 		print('Guardando modelo en %d iteraciones....' %(i+1))
 		saver.save(sess, modelPath+NOMBRE_MODELO, global_step=i+1,write_meta_graph=True)
 ```
+
+**Extras**
+```python
+feed_dictx = {x: eval_imagenes, y_deseada: eval_clases,keep_prob: 1.0}
+clases_calc[:] = sess.run(predictor, feed_dict=feed_dictx)
+clases_deseadas = eval_clases_flat
+# Crea una matriz booleana
+correct = (clases_deseadas == clases_calc)
+```
+Muestra algunas imagenes que no fueron clasificadas correctamente
+```python
+plot_example_errors(cls_pred=clases_calc, correct=correct, images = eval_imagenes, labels_flat=eval_clases_flat)
+plt.show()	
+```
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29967618-16ecc65e-8edd-11e7-9e4b-f2a3cb7ae152.png"  width="480" />
+</p>
+
+
+"Mostrando Matriz de Confusion"
+```python
+plot_confusion_matrix(clases_calc, clases_deseadas,10)
+plt.show()	
+```
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29967593-fd3b60c6-8edc-11e7-817d-ee8a17cd619e.png"  width="480" />
+</p>
