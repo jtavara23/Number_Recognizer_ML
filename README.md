@@ -154,7 +154,7 @@ Cuando se presenta una nueva imagen a la CNN, se filtra a través de las capas i
 #### Estructura del modelo
 
 <p align="center">
-<img src = "https://user-images.githubusercontent.com/18404919/29766434-582acb70-8ba4-11e7-8efb-2c9e192d202d.png" />
+<img src = "https://user-images.githubusercontent.com/18404919/29970103-ecda1b80-8ee8-11e7-9416-30166bf7cb95.png" />
 </p>
 
 **Configuracion de Parametros**<br/>
