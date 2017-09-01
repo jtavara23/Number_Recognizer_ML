@@ -38,7 +38,7 @@ if __name__ == "__main__":
 	# Restauramos el ultimo punto de control
 	with tf.Session() as sess:
 		sess.run(tf.global_variables_initializer())
-		saver = tf.train.import_meta_graph(path + 'CNN/models/model-280.meta')
+		saver = tf.train.import_meta_graph(path + 'CNN/models/model-100.meta')
 		saver.restore(sess, tf.train.latest_checkpoint(path + 'CNN/models/.'))
 		print "Modelo restaurado",tf.train.latest_checkpoint(path + 'CNN/models/.')
 		
@@ -85,8 +85,8 @@ if __name__ == "__main__":
 		print(msg.format(acc, correct_sum, cant_evaluar))
 
 		# Muestra algunas imagenes que no fueron clasificadas correctamente
-		#plot_example_errors(clases_pred=clases_pred, correct=correct,imagenes = imagenes, clases_flat=clases_flat)
-
+		plot_example_errors(cls_pred=clases_pred, correct=correct,images = imagenes, labels_flat=clases_flat)
+		plt.show()
 		print("Mostrando Matriz de Confusion")
 		plot_confusion_matrix(clases_pred, clases_deseadas,numero_clases)
 		plt.show()
