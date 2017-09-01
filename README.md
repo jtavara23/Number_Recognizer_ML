@@ -502,3 +502,6 @@ Ejecutando entrenamiento para la 2da epoca
 </p>
 
 
+**Fuentes de ayuda** <br/>
+https://codelabs.developers.google.com/codelabs/cloud-tensorflow-mnist/#0 <br/>
+https://www.kaggle.com/kakauandme/tensorflow-deep-nn
