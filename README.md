@@ -2,7 +2,7 @@
 
  1. [Introduccion](#introduccion)
  2. [Cargar los Datos](#cargar-los-datos)<br/>
-    2.1 [Dividir conjunto de entrenamiento y validación](#dividir-conjunto-de-entrenamiento-y-validación)<br/>
+    2.1 [Dividir conjunto de entrenamiento y evaluacion](#dividir-conjunto-de-entrenamiento-y-evaluacion)<br/>
     2.2 [Procesar los Datos](#procesar-los-datos)<br/>
     2.3 [Asignacion de clases](#asignacion-de-clases)<br/>
     
@@ -38,6 +38,7 @@ Es una buena base de datos para las personas que quieren probar técnicas de apr
 <p align="center">
   <img src=https://user-images.githubusercontent.com/18404919/29759317-4b838534-8b80-11e7-9533-ed582f7ef037.png>
 </p>
+
 ```python 
 path = '/media/josuetavara/Gaston/mnist/mnistDS/'
 datasetEntrenamiento = pd.read_csv(path+'datasets/60ktrain.csv')
@@ -481,3 +482,23 @@ plt.show()
 <p align="center">
 <img src = "https://user-images.githubusercontent.com/18404919/29967726-bb7e22b2-8edd-11e7-90e9-0bbd36518d4d.png"  width="480" />
 </p>
+
+
+
+Ejecutando entrenamiento para la 2da epoca
+
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29968359-ec47e736-8ee0-11e7-98f9-20d321dfa94e.png"  width="480" />
+</p>
+
+
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29968394-18026608-8ee1-11e7-99ba-8c5f2b04e18c.png"  width="480" />
+</p>
+
+
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29968329-c7b76748-8ee0-11e7-994f-def1a5fd0631.png"  width="480" />
+</p>
+
+
