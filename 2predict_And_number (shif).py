@@ -9,25 +9,11 @@ from scipy import ndimage
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
 path = '/media/josuetavara/Gaston/mnist/mnistDS/'
+NOMBRE_TENSOR_ENTRADA = 'inputX'
+NOMBRE_TENSOR_SALIDA_DESEADA = "outputYDeseada"
+NOMBRE_PROBABILIDAD = 'mantener_probabilidad'
 
 
-
-def getBestShift(img):
-    cy,cx = ndimage.measurements.center_of_mass(img)
-    #print cy,cx
-
-    rows,cols = img.shape
-    shiftx = np.round(cols/2.0-cx).astype(int)
-    shifty = np.round(rows/2.0-cy).astype(int)
-
-    return shiftx,shifty
-
-
-def shift(img,sx,sy):
-    rows,cols = img.shape
-    M = np.float32([[1,0,sx],[0,1,sy]])
-    shifted = cv2.warpAffine(img,M,(cols,rows))
-    return shifted
 
 def image_resize(image, width = None, height = None, inter = cv2.INTER_AREA):
     # initialize the dimensions of the image to be resized and
@@ -86,20 +72,20 @@ def analyse_image(name):
 		height  = int(height * float(280)/width)
 		width = 280
 	image = cv2.resize(image, (height,width))
-	cv2.imwrite('img/a.jpg',image) 
+	cv2.imwrite('imagenes/a.jpg',image) 
 	image=cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-	cv2.imwrite('img/b.jpg',image) 
+	cv2.imwrite('imagenes/b.jpg',image) 
 	image=cv2.GaussianBlur(image,(7,7),0)# 5 5 | 9 9 | 7 7 | 7 7 | 7 7
-	cv2.imwrite('img/c.jpg',image) 
+	cv2.imwrite('imagenes/c.jpg',image) 
 	edged = cv2.adaptiveThreshold(image,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,1,11,3)
-	cv2.imwrite('img/d.jpg',edged) 
+	cv2.imwrite('imagenes/d.jpg',edged) 
 
 
 	qk = 3#3 |1 |1 |1 | 3
-	#applying closing function 
+	#funcion de erosion y dilatacion
 	kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (qk, qk))
 	closed = cv2.morphologyEx(edged, cv2.MORPH_CLOSE, kernel)
-	cv2.imwrite('img/e.jpg',closed)
+	cv2.imwrite('imagenes/e.jpg',closed)
 
 
 	im, cnts, _ = cv2.findContours(closed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -117,7 +103,7 @@ def analyse_image(name):
 			lista.append([x,y,w,h])
 	lista = np.array(lista) 
 	lista = lista[lista[:,0].argsort()]
-	cv2.imwrite('img/f.jpg',copyclone)	
+	cv2.imwrite('imagenes/f.jpg',copyclone)	
 	return lista,copyclone
 
 
@@ -129,11 +115,12 @@ if __name__ == "__main__":
 	with tf.Session() as sess:
 		# Restore latest checkpoint
 		sess.run(tf.global_variables_initializer())
-		saver = tf.train.import_meta_graph(path + 'cnn/models/model-100.meta')
-		saver.restore(sess, tf.train.latest_checkpoint(path + 'cnn/models/.'))
-		print "Model restored",tf.train.latest_checkpoint(path + 'cnn/models/.')
+		saver = tf.train.import_meta_graph(path + 'CNN/models/model-100.meta')
+		ult_pto_control = tf.train.latest_checkpoint(path + 'CNN/models/.')
+		saver.restore(sess, ult_pto_control)
+		print "Model restored",ult_pto_control
 
-		predict_op = tf.get_collection("predict_op")[0]
+		predictor = tf.get_collection("predictor")[0]
 
 		newsize = 28
 		
@@ -143,7 +130,7 @@ if __name__ == "__main__":
 		print "Testing numbers"
 		import os
 		#numbers = os.listdir("/media/josuetavara/Gaston/mnist/image_processing/block_numbers")
-		numbers = ['img/prueba5.jpg']
+		numbers = ['imagenes/prueba6.jpg']
 
 		for jj in xrange(0,len(numbers)):
 			lista,closed = analyse_image(numbers[jj])
@@ -152,54 +139,46 @@ if __name__ == "__main__":
 				x,y,w,h = lista[c]
 			
 				idx+=1
-				final_img=closed[y:y+h,x:x+w]
+				final_imagenes=closed[y:y+h,x:x+w]
 				results = [0] * 10
 			
-				new_img = final_img
+				new_imagenes = final_imagenes
 				
-				rows,cols = new_img.shape
+				rows,cols = new_imagenes.shape
 				
 				compl_dif = abs(rows-cols)
 				half_Sm = compl_dif/2
 				half_Big = half_Sm if half_Sm*2 == compl_dif else half_Sm+1
 				if rows > cols:
-				    new_img = np.lib.pad(new_img,((0,0),(half_Sm,half_Big)),'constant', constant_values=0)
+				    new_imagenes = np.lib.pad(new_imagenes,((0,0),(half_Sm,half_Big)),'constant', constant_values=0)
 				else:
-				    new_img = np.lib.pad(new_img,((half_Sm,half_Big),(0,0)),'constant', constant_values=0)
+				    new_imagenes = np.lib.pad(new_imagenes,((half_Sm,half_Big),(0,0)),'constant', constant_values=0)
 				
 				
-				new_img = image_resize(new_img,width=20,height=20) 
-				new_img = cv2.resize(new_img,(20,20),cv2.INTER_AREA)#w	
+				new_imagenes = image_resize(new_imagenes,width=20,height=20) 
+				new_imagenes = cv2.resize(new_imagenes,(20,20),cv2.INTER_AREA)#w	
 				
-				new_img = np.lib.pad(new_img,((4,4),(4,4)),'constant')
-				cv2.imwrite("img/z"+str(c)+"b.jpg",new_img)	
+				new_imagenes = np.lib.pad(new_imagenes,((4,4),(4,4)),'constant')
+				cv2.imwrite("imagenes/z"+str(c)+"b.jpg",new_imagenes)	
 
-				#shiftx,shifty = getBestShift(new_img)
-				#shifted = shift(new_img,shiftx,shifty)
-				
-				#new_img = shifted
-				#cv2.imwrite("z"+str(c)+"img/b.jpg",new_img)	
-
-				
-				data = read_image(new_img)
+				#------------FIN DE PROCESAMIENTO DE IMAGEN------------
+				data = read_image(new_imagenes)
 				image = data.astype(np.float)
 				#print dataimages
 				image = np.multiply(image, 1.0 / 255.0)
 				
 				image = image[0, :]
-				# Create a feed-dict with these images and labels.
-				feed_dictx = {"phx:0": image ,"p_keep_conv:0":1.0}
+				
+				feed_dictx = {NOMBRE_TENSOR_ENTRADA+":0": image, NOMBRE_PROBABILIDAD+":0":1.0}
 
-				# Calculate the predicted class using TensorFlow.
-				label_pred = sess.run(predict_op, feed_dict=feed_dictx)
-					
-				#print label_pred
+				# Calcula la clase usando el predictor de nuestro modelo
+				label_pred = sess.run(predictor, feed_dict=feed_dictx)
 				
 				pred = int(label_pred)
 				results[pred] += 1
 				#print results
 				#print "********************"
 				number += str(results.index(max(results)))
-			print 'Prediction: ',numbers[jj] , number
+			print 'Numero analisado: ',numbers[jj] , number
 			print "------------------------------"
 			#"""
