@@ -448,6 +448,13 @@ for i in range(ultima_iteracion, ITERACIONES_ENTRENAMIENTO):
 		saver.save(sess, modelPath+NOMBRE_MODELO, global_step=i+1,write_meta_graph=True)
 ```
 
+Ejecutando entrenamiento para la 1ra epoca
+
+<p align="center">
+<img src = "https://user-images.githubusercontent.com/18404919/29967772-f718a374-8edd-11e7-9500-a4aa20ffcf9c.png"  width="480" />
+</p>
+
+
 **Extras**
 ```python
 feed_dictx = {x: eval_imagenes, y_deseada: eval_clases,keep_prob: 1.0}
@@ -472,5 +479,5 @@ plot_confusion_matrix(clases_calc, clases_deseadas,10)
 plt.show()	
 ```
 <p align="center">
-<img src = "https://user-images.githubusercontent.com/18404919/29967593-fd3b60c6-8edc-11e7-817d-ee8a17cd619e.png"  width="480" />
+<img src = "https://user-images.githubusercontent.com/18404919/29967726-bb7e22b2-8edd-11e7-90e9-0bbd36518d4d.png"  width="480" />
 </p>
