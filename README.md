@@ -1,15 +1,15 @@
 # Reconocedor De Numeros usando Redes Neuronales Convolucionales
 
  1. [Introduccion](#introduccion)
- 2. [Procesamiento de Datos](#procesamiento-de-datos)<br/>
-    2.1 [Cargar los Datos](#cargar-los-datos)<br/>
-    2.2 [Normalizar](#normalizar)<br/>
+ 2. [Cargar los Datos](#cargar-los-datos)<br/>
+    2.1 [Dividir conjunto de entrenamiento y validación](#dividir-conjunto-de-entrenamiento-y-validación)
+		2.2 [Procesar los Datos](#procesar-los-datos)<br/>
     2.3 [Asignacion de clases](#asignacion-de-clases)<br/>
-    2.4 [Dividir conjunto de entrenamiento y validación](#dividir-conjunto-de-entrenamiento-y-validación)
+    
  3. [Red Convolucional](#red-convolucional)<br/>
     3.1 [Conceptos Basicos](#red-convolucional)<br/>
     3.2 [Construccion de La Red Convolucional](#construccion-de-la-red-convolucional)
- 4. [Entrenamiento de la Red Convolucional](#entrenamiento-de-la-red-convolucional)
+ 4. [Entrenamiento y Evaluacion de la Red Convolucional](#entrenamiento-y-evaluacion-de-la-red-convolucional)
  5. [Evaluacion de la Red Convolucional](#evaluacion-de-la-red-convolucional)
   
 
@@ -31,39 +31,52 @@ import time
 from datetime import timedelta
 from funcionesAuxiliares import  display,activation_vector
 ```
-## Procesamiento de Datos 
+## Cargar de Datos 
 Link: http://yann.lecun.com/exdb/mnist/
 >La base de datos MNIST("Modified National Institute of Standards and Technology") de dígitos manuscritos, disponible en esta página, tiene un conjunto de entrenamiento de 60.000 ejemplos y un conjunto de prueba de 10.000 ejemplos. Es un subconjunto de un conjunto más grande disponible de NIST. Los dígitos se han normalizado de tamaño y se han centrado en una imagen de tamaño fijo.
 Es una buena base de datos para las personas que quieren probar técnicas de aprendizaje y métodos de reconocimiento de patrones en los datos del mundo real, ya que se evita el esfuerzo de preprocesar y formatear las imagenes.<br />
 <p align="center">
   <img src=https://user-images.githubusercontent.com/18404919/29759317-4b838534-8b80-11e7-9533-ed582f7ef037.png>
 </p>
-
-### Cargar los Datos 
 ```python 
-datasetTraining = pd.read_csv(path+'datasets/60ktrain.csv')
-imagenes = datasetEntrenamiento.iloc[:,1:].values
-imagenes = imagenes.astype(np.float)
+path = '/media/josuetavara/Gaston/mnist/mnistDS/'
+datasetEntrenamiento = pd.read_csv(path+'datasets/60ktrain.csv')
+datasetEvaluacion = pd.read_csv(path+'datasets/10ktest.csv')
 ```
 
-### Normalizar
-```python 
-# Normalizar, convertir de [0:255] => [0.0:1.0]
-imagenes = np.multiply(imagenes, 1.0 / 255.0)	
+### Dividir conjunto de entrenamiento y evaluacion
+Por último, reservamos algunos datos para su evaluacion. Es esencial en modelos de ML tener un conjunto de datos independiente que no participa en el entrenamiento y se utiliza para asegurarse de que lo que hemos aprendido en realidad se puede generalizar.
+``` python
+tam_imagen, entrenam_imagenes, entrenam_clases, entrenam_clases_flat = procesamiento(datasetEntrenamiento)
+tam_imagen, eval_imagenes, eval_clases, eval_clases_flat = procesamiento(datasetEvaluacion)
+```
+
+### Procesar los Datos 
+``` python
+def procesamiento(dataset):
+	imagenes = dataset.iloc[:,1:].values
+	imagenes = imagenes.astype(np.float)
+	
+	# Normalizar, convertir de [0:255] => [0.0:1.0]
+	imagenes = np.multiply(imagenes, 1.0 / 255.0)	
+	
+	#Tamanho de una imagen: 784 valores que son obtenidos de una imagen de 28 x 28
+	tam_imagen = imagenes.shape[1]
 ```
 ### Asignacion de clases
 Para la mayoría de los problemas de clasificación, se utilizan "vectores de activacion". Un vector de activacion es un vector que contiene un único elemento igual a 1 y el resto de los elementos igual a 0. En este caso, el n-ésimo dígito se representa como un vector cero con 1 en la posición n-ésima.<br />
 ```python 
-#Organizar las clases de las imagenes en un solo vector
-clases_flat = datasetEntrenamiento.iloc[:,0].values.ravel()
+	#Organizar las clases de las imagenes en un solo vector
+	clases_flat = dataset.iloc[:,0].values.ravel()
 
-# convertir tipo de clases de escalares a vectores de activacion de 1s
-# 0 => [1 0 0 0 0 0 0 0 0 0]
-# 1 => [0 1 0 0 0 0 0 0 0 0]
-# ...
-# 9 => [0 0 0 0 0 0 0 0 0 1]
-clases = activation_vector(clases_flat, CANT_CLASES)
-clases = clases.astype(np.uint8)
+	# convertir tipo de clases de escalares a vectores de activacion de 1s
+	# 0 => [1 0 0 0 0 0 0 0 0 0]
+	# 1 => [0 1 0 0 0 0 0 0 0 0]
+	# ...
+	# 9 => [0 0 0 0 0 0 0 0 0 1]
+	clases = activation_vector(clases_flat, CANT_CLASES)
+	clases = clases.astype(np.uint8)
+	return tam_imagen, imagenes[:], clases[:], clases_flat[:]
 ```
 ```python
 def activation_vector(labels_dense, num_classes):
@@ -73,19 +86,7 @@ def activation_vector(labels_dense, num_classes):
     labels_one_hot.flat[index_offset + labels_dense.ravel()] = 1
     return labels_one_hot
 ```
-### Dividir conjunto de entrenamiento y validación
-Por último, reservamos algunos datos para su validación. Es esencial en modelos de ML tener un conjunto de datos independiente que no participa en el entrenamiento y se utiliza para asegurarse de que lo que hemos aprendido en realidad se puede generalizar.
-``` python
-#cantidad de imagenes del conjunto de entrenamiento separadas para validar
-TAM_VALIDACION = 4000
-#56000 imagenes para entrenar
-validac_imagenes = imagenes[:TAM_VALIDACION] 
-validac_clases = clases[:TAM_VALIDACION]
 
-entrenam_imagenes = imagenes[TAM_VALIDACION:]
-entrenam_clases = clases[TAM_VALIDACION:]
-entrenam_clases_flat = clases_flat[TAM_VALIDACION:]
-```
 ## Red Convolucional
 ### Conceptos Basicos
 Las redes neuronales convolucionales (CNNs) son una variación biológicamente inspirada de los perceptrones multicapa (MLPs). A diferencia de MLPs donde cada neurona tiene un vector de peso separado, las neuronas en las CNNs comparten pesos.<br />
@@ -172,7 +173,7 @@ Las entradas y salidas para las capas convolucionales se hacen a traves de tenso
 ``` python
 #las capas de convolucion esperan que las entradas sean encodificadas en tensores de 4D
 imagen = tf.reshape(x, [-1,altura_imagen, anchura_imagen,1])
-#print (imagen.get_shape()) # =>(56000,28,28,1)
+#print (imagen.get_shape()) # =>(60000,28,28,1)
 ```
 
 **Fuciones de Inicializacion**<br/>
@@ -180,64 +181,78 @@ imagen = tf.reshape(x, [-1,altura_imagen, anchura_imagen,1])
 # tf.truncated_normal: Emite valores aleatorios 
 def inicializar_pesos(shape):
 	initial = tf.truncated_normal(shape, stddev=0.1)
-	return tf.Variable(initial)
+	w = tf.Variable(initial, name = "W")
+	tf.summary.histogram("pesos", w)
+	return w
 
 def inicializar_bias(shape):
 	initial = tf.constant(0.1, shape=shape)
-	return tf.Variable(initial)
+	b = tf.Variable(initial, name = "B")
+	tf.summary.histogram("biases", b)
+	return b 
+	
+resumen = tf.summary.merge_all()
 ``` 
 **Primera Capa Convolucional**
 ``` python
-#[tamanho_filtro,tamanho_filtro, canalEnt_img, cant_filtros]
-forma = [5, 5, 1, 32]
-pesos_conv1 = inicializar_pesos(shape = forma)
-biases_conv1 = inicializar_bias([32])
+with tf.name_scope("convolucion1"):
+	#Forma de los pesos del filtro
+	#[tamanho_filtro,tamanho_filtro, canalEnt_img, cant_filtros]
+	forma = [5, 5, 1, 32]
 
-#strides=[img,movx,movy ,filtro]
-convolucion1 = tf.nn.conv2d(imagen,
-                         pesos_conv1,
-                         strides=[1, 1, 1, 1],
-                         padding='SAME')
-#print (convolucion1.get_shape()) # => (56000, 28,28, 32)
+	pesos_conv1 = inicializar_pesos(shape = forma)
+	biases_conv1 = inicializar_bias([32])
 
-#el valor del bias es adicionado para cada resultado de convolucion
-convolucion1 += biases_conv1
+	#strides=[img,movx,movy ,filtro]
+	convolucion1 = tf.nn.conv2d(imagen,
+													 pesos_conv1,
+													 strides=[1, 1, 1, 1],
+													 padding='SAME')
 
-#funcion de activacion
-act_conv1 = tf.nn.relu(convolucion1)
-#print(act_conv1.get_shape()) # => (56000, 28, 28, 32)
+	#el valor del bias es adicionado para cada resultado de convolucion
+	convolucion1 += biases_conv1
 
-pool_conv1 = tf.nn.max_pool(act_conv1,
-                            ksize=[1, 2, 2, 1],
-                            strides=[1, 2, 2, 1],
-                            padding='SAME')
-#print(pool_conv1.get_shape()) # => (56000, 14, 14, 32)
+	#funcion de activacion
+	act_conv1 = tf.nn.relu(convolucion1)
+	#print(act_conv1.get_shape()) # => (60000, 28, 28, 32)
+
+	pool_conv1 = tf.nn.max_pool(act_conv1,
+															ksize=[1, 2, 2, 1],
+															strides=[1, 2, 2, 1],
+															padding='SAME')
+
+	#print(pool_conv1.get_shape()) # => (60000, 14, 14, 32)
 ``` 
 
 **Segunda Capa Convolucional**
 ``` python
-forma = [5, 5, 32, 64]
-pesos_conv2 = inicializar_pesos(shape = forma)
-biases_conv2 = inicializar_bias([64])
+with tf.name_scope("convolucion2"):
+	#Forma de los pesos del filtro
+	#[tamanho_filtro,tamanho_filtro, canalEnt_img, cant_filtros]
+	forma = [5, 5, 32, 64]
 
-convolucion2 = tf.nn.conv2d(pool_conv1,
-                         pesos_conv2,
-                         strides=[1, 1, 1, 1],
-                         padding='SAME')
-#print (convolucion2.get_shape()) # => (56000, 14,14, 64)
+	pesos_conv2 = inicializar_pesos(shape = forma)		
+	biases_conv2 = inicializar_bias([64])	
 
-#el valor del bias es adicionado para cada resultado de convolucion
-convolucion2 += biases_conv2
+	#strides=[img,movx,movy ,filtro]
+	convolucion2 = tf.nn.conv2d(pool_conv1,
+													 pesos_conv2,
+													 strides=[1, 1, 1, 1],
+													 padding='SAME')
+	#el valor del bias es adicionado para cada resultado de convolucion
+	convolucion2 += biases_conv2
 
-#funcion de activacion
-act_conv2 = tf.nn.relu(convolucion2)
-#print (act_conv2.get_shape()) # => (56000, 14,14, 64)
+	#funcion de activacion
+	act_conv2 = tf.nn.relu(convolucion2)
+	#print (act_conv2.get_shape()) # => (60000, 14,14, 64)
 
-pool_conv2 = tf.nn.max_pool(act_conv2,
-                            ksize=[1, 2, 2, 1],
-                            strides=[1, 2, 2, 1],
-                            padding='SAME')
-#print (pool_conv2.get_shape()) # => (56000, 7, 7, 64)
+
+	pool_conv2 = tf.nn.max_pool(act_conv2,
+															ksize=[1, 2, 2, 1],
+															strides=[1, 2, 2, 1],
+															padding='SAME')
+	#print (pool_conv2.get_shape()) # => (60000, 7, 7, 64)
+
 ``` 
 
 **Capa Totalmente Conectada(Fully Connected)**<br/>
@@ -246,18 +261,20 @@ Las entradas y salidas para las capas FC se hacen a traves de tensores de 2 dime
 	2. Cantidad Datos salida
   
 ``` python
-forma = [7 * 7 * 64, 1024]
-pesos_fc1 = inicializar_pesos(shape = forma)
-biases_fc1 = inicializar_bias([1024])
+with tf.name_scope("FC1"):
+	#Para esta capa se necesita un tensor de 2 dimensiones(Entradas, Salidas)
+	forma = [7 * 7 * 64, 1024]
+	pesos_fc1 = inicializar_pesos(shape = forma)
+	biases_fc1 = inicializar_bias([1024])
 
-pool_conv2_flat = tf.reshape(pool_conv2, [-1, 7*7*64])
-# (56000, 7, 7, 64) => (56000, 3136)
+	pool_conv2_flat = tf.reshape(pool_conv2, [-1, 7*7*64])
+	# (60000, 7, 7, 64) => (60000, 3136)
 
-# Multiplicar matriz 'pool_conv2_flat' por matriz 'pesos_fc1' y sumar bias
-fc1 = tf.matmul(pool_conv2_flat, pesos_fc1) + biases_fc1
-#print (fc1.get_shape()) # => (56000, 1024)
+	# Multiplicar matriz 'pool_conv2_flat' por matriz 'pesos_fc1' y sumar bias
+	fc1 = tf.matmul(pool_conv2_flat, pesos_fc1) + biases_fc1
+	#print (fc1.get_shape()) # => (60000, 1024)
 
-act_fc1 = tf.nn.relu(fc1)
+	act_fc1 = tf.nn.relu(fc1)
 ``` 
 
 **Aplicar Dropout**
@@ -277,17 +294,19 @@ h_fc1_drop = tf.nn.dropout(act_fc1, keep_prob)
 **Capa de Salida**<br/>
 Estima la probabilidad de que la imagen de entrada pertenezca a cada una de las 10 clases. Sin embargo, estas estimaciones son un poco difíciles de interpretar porque los números pueden ser muy pequeños o grandes, por lo que queremos normalizarlos para que cada elemento esté limitado entre cero y uno y los 10 elementos sumen a uno. Esto se calcula utilizando la función softmax y el resultado se almacena en y_calculada.
 ``` python
-pesos_fc2 = inicializar_pesos([1024, CANT_CLASES])
-biases_fc2 = inicializar_bias([CANT_CLASES])
-fc2 = tf.matmul(h_fc1_drop, pesos_fc2) + biases_fc2
+with tf.name_scope("FC2"):
+	pesos_fc2 = inicializar_pesos([1024, CANT_CLASES])
+	biases_fc2 = inicializar_bias([CANT_CLASES])
 
+	fc2 = tf.matmul(h_fc1_drop, pesos_fc2) + biases_fc2
+	
 y_calculada = tf.nn.softmax(fc2, name = NOMBRE_TENSOR_SALIDA_CALCULADA)
-print (y_calculada.get_shape()) # => (56000, 10)
+#print (y_calculada.get_shape()) # => (60000, 10)
 
 #El número de clase es el índice del elemento más grande.
 #[0.01, 0.04, 0.02, 0.5, 0.03 0.01, 0.05, 0.02, 0.3, 0.02] => 3
-clase_predecida = tf.argmax(y_calculada,dimension = 1)
-tf.add_to_collection("predictor", clase_predecida)	
+predictor = tf.argmax(y_calculada,dimension = 1)
+tf.add_to_collection("predictor", predictor)
 ``` 
 
 **Funcion de Costo de Error**<br/>
@@ -302,9 +321,12 @@ iterac_entren = tf.Variable(0, name='iterac_entren', trainable=False)
 ``` 
 Para la optimizacion se requiere que se inicialice con una **tasa de aprendizaje**.Esta determina la rapidez o la lentitud con que desea actualizar los parámetros. Por lo general, uno puede comenzar con una gran tasa de aprendizaje, y disminuir  la tasa de aprendizaje a medida que progresa el entrenamiento.
 ``` python
-#TASA_APRENDIZAJE = 5e-4  #hasta 3000 iteraciones
-#TASA_APRENDIZAJE = 1e-4  #desde 3000 a (+)
-optimizador = tf.train.AdamOptimizer(TASA_APRENDIZAJE).minimize(costo, global_step=iterac_entren)
+#TASA_APRENDIZAJE = 5e-4  #1ra epoca
+#TASA_APRENDIZAJE = 3e-4  #2da epoca
+#TASA_APRENDIZAJE = 1e-4  #3ra epoca
+with tf.name_scope("entrenamiento"):
+		#Funcion de optimizacion
+		optimizador = tf.train.AdamOptimizer(TASA_APRENDIZAJE).minimize(error, global_step=iterac_entren)
 ``` 
 
 **Evaluacion de acierto**<br/>
@@ -316,13 +338,13 @@ prediccion_correcta = tf.equal(tf.argmax(y_calculada,1), tf.argmax(y_deseada,1))
 acierto = tf.reduce_mean(tf.cast(prediccion_correcta, 'float'))
 ``` 
 
-## Entrenamiento de la Red Convolucional 
-Una vez que el modelo de la red haya sido creado a atraves de un grafo de tensorflow, necesitamos crear una sesion tensorflow el cual es usado para ejecutar el modelo creado.
+## Entrenamiento y Evaluacion de la Red Convolucional 
+necesitamos crear una sesion tensorflow, para crear el modelo y luego entrenarlo.
 ``` python
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 ``` 
-Tambien es necesario guardar el modelo para usarlo posteriormente en la evaluacion de datos o continuar entrenando la red.
+Una vez que el modelo de la red haya sido creado a atraves de un grafo de tensorflow, tambien es necesario guardar el modelo para usarlo posteriormente en la evaluacion de datos o continuar entrenando la red.
 ``` python
 saver = tf.train.Saver()
 modelPath = '/media/josuetavara/Gaston/mnist/mnistDS/CNN/models/'
@@ -333,11 +355,11 @@ if ckpt and ckpt.model_checkpoint_path:
 	else:
 		print("No se encontro puntos de control.")
 ```
-Hay 56.000 imágenes en el conjunto de entrenamiento. Se tarda mucho tiempo y consume bastantes recursos el intentar optimizar el entrenamiento para todas las imagenes. Por lo tanto, sólo se utiliza un pequeño lote de imágenes en cada iteración del optimizador. 
+Hay 60.000 imágenes en el conjunto de entrenamiento. Se tarda mucho tiempo y consume bastantes recursos el intentar optimizar el entrenamiento para todas las imagenes. Por lo tanto, sólo se utiliza un pequeño lote de imágenes en cada iteración del optimizador. 
 ```python
 BATCH_SIZE = 200
 #una epoca culmina cuando se ha entrenado a todas las imagenes del conj.Entrenamiento
-#Para 56000 , con 200 imagenes * 280 iteraciones
+#Para 60000 = con 200 imagenes * 300 iteraciones
 epocas_completadas = 0 
 indice_en_epoca = 0
 ```
@@ -345,7 +367,7 @@ indice_en_epoca = 0
 
 def siguiente_batch(batch_size,cant_imag_entrenamiento ):
     
-	#cant_imag_entrenamiento= 56000
+	#cant_imag_entrenamiento= 60000
 	global entrenam_imagenes
 	global entrenam_clases
 	global entrenam_clases_flat
@@ -413,79 +435,6 @@ for i in range(ultima_iteracion, ITERACIONES_ENTRENAMIENTO):
 ```
 ## Evaluacion de la Red Convolucional
 Leemos el dataset de evaluacion y procesamos los datos 
-``` python
-path = '/media/josuetavara/Gaston/mnist/mnistDS/'
-dataset = pd.read_csv(path+'datasets/10ktest.csv')
-imagenes = dataset.iloc[:,1:].values
-imagenes = imagenes.astype(np.float)
-
-# Normalizar, convertir de [0:255] => [0.0:1.0]
-imagenes = np.multiply(imagenes, 1.0 / 255.0)
-#Organizar las clases de las imagenes en un solo vector
-clases_flat = dataset.iloc[:,0].values
-
-numero_clases = np.unique(clases_flat).shape[0]
-#print('number of labes => {0}'.format(numero_clases))
-
-# convertir tipo de clases de escalares a vectores de activacion de 1s
-# 0 => [1 0 0 0 0 0 0 0 0 0]
-# 1 => [0 1 0 0 0 0 0 0 0 0]
-# ...
-# 9 => [0 0 0 0 0 0 0 0 0 1]
-labels = activation_vector(clases_flat, numero_clases)
-labels = labels.astype(np.uint8)
-```
-Restauramos el grafo en nueva nueva sesion y el ultimo punto de control con los datos del grafo
-```python
-with tf.Session() as sess:
-	sess.run(tf.global_variables_initializer())
-	saver = tf.train.import_meta_graph(path + 'CNN/models/model-100.meta')
-	saver.restore(sess, tf.train.latest_checkpoint(path + 'CNN/models/.'))
-	print "Modelo restaurado",tf.train.latest_checkpoint(path + 'CNN/models/.')
-```
-
-``` python
-#Tensor predictor para clasificar la imagen
-predictor = tf.get_collection("predictor")[0]
-#cantidad de imagenes a clasificar
-cant_evaluar = (imagenes.shape[0])
-
-clases_pred = np.zeros(shape=cant_evaluar, dtype=np.int)
-
-
-start = 0
-print "Prediciendo clases..."
-while start < cant_evaluar:
-	end = min(start + BATCH_SIZE, cant_evaluar)
-	
-	images_evaluar = imagenes[start:end, :]
-	clases_evaluar = labels[start:end, :]
-
-	#Introduce los datos para ser usados en un tensor
-	feed_dictx = {NOMBRE_TENSOR_ENTRADA+":0": images_evaluar, NOMBRE_TENSOR_SALIDA_DESEADA+":0": clases_evaluar,NOMBRE_PROBABILIDAD+":0":1.0}
-
-	# Calcula la clase predecida , atraves del tensor predictor
-	clases_pred[start:end] = sess.run(predictor, feed_dict=feed_dictx)
-	
-	# Asigna el indice final del batch actual
-	# como comienzo para el siguiente batch 
-	start = end
-
-# Convenience variable for the true class-numbers of the test-set.
-clases_deseadas = clases_flat
-
-# Cree una matriz booleana
-correct = (clases_deseadas == clases_pred)
-
-# Se Calcula el número de imágenes correctamente clasificadas.
-correct_sum = correct.sum()
-
-# La precisión de la clasificación es el número de imgs clasificadas correctamente
-acc = float(correct_sum) / cant_evaluar
-
-msg = "Acierto en el conjunto de Testing: {0:.1%} ({1} / {2})"
-print(msg.format(acc, correct_sum, cant_evaluar))
-```
 Muestra algunas imagenes que no fueron clasificadas correctamente
 ```python
 plot_example_errors(clases_pred=clases_pred, correct=correct,imagenes = imagenes, clases_flat=clases_flat)
