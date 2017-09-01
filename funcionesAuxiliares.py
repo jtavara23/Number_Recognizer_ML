@@ -69,9 +69,9 @@ def plot_images(images, cls_true, cls_pred=None):
 
         # Show true and predicted classes.
         if cls_pred is None:
-            xlabel = "True: {0}".format(cls_true[i])
+            xlabel = "REAL: {0}".format(cls_true[i])
         else:
-            xlabel = "True: {0}, Pred: {1}".format(cls_true[i], cls_pred[i])
+            xlabel = "Des: {0}, Calc: {1}".format(cls_true[i], cls_pred[i])
 
         # Show the classes as the label on the x-axis.
         ax.set_xlabel(xlabel)
@@ -141,9 +141,7 @@ def plot_confusion_matrix(cls_pred,cls_true,num_classes):
         plt.text(j, i, cm[i, j], horizontalalignment="center", color="white" if cm[i, j] > thresh else "black")
 
 
-    
-
-    plt.xlabel('Predicted')
-    plt.ylabel('True')
+    plt.xlabel('Predicida')
+    plt.ylabel('Deseada')
 
 
