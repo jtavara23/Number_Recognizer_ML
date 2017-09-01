@@ -2,15 +2,15 @@
 
  1. [Introduccion](#introduccion)
  2. [Cargar los Datos](#cargar-los-datos)<br/>
-    2.1 [Dividir conjunto de entrenamiento y validación](#dividir-conjunto-de-entrenamiento-y-validación)
-		2.2 [Procesar los Datos](#procesar-los-datos)<br/>
+    2.1 [Dividir conjunto de entrenamiento y validación](#dividir-conjunto-de-entrenamiento-y-validación)<br/>
+    2.2 [Procesar los Datos](#procesar-los-datos)<br/>
     2.3 [Asignacion de clases](#asignacion-de-clases)<br/>
     
  3. [Red Convolucional](#red-convolucional)<br/>
     3.1 [Conceptos Basicos](#red-convolucional)<br/>
     3.2 [Construccion de La Red Convolucional](#construccion-de-la-red-convolucional)
  4. [Entrenamiento y Evaluacion de la Red Convolucional](#entrenamiento-y-evaluacion-de-la-red-convolucional)
- 5. [Evaluacion de la Red Convolucional](#evaluacion-de-la-red-convolucional)
+ 
   
 
 ## Introduccion
@@ -403,45 +403,47 @@ train_val_File = open("TrainVal_ac.csv","a")
 
 **Comenzamos el entrenamiento**
 ```python
-#Con BATCH_SIZE=200 images, cada 280 iteraciones se completa una epoca
-ITERACIONES_ENTRENAMIENTO = 2800 
-CHKP_GUARDAR_MODELO = 560 #cada 560 iteraciones
-CHKP_REVISAR_PROGRESO = CHKP_GUARDAR_MODELO # acuracia del conj. validacion
+TASA_APRENDIZAJE = 5e-4  #1ra epoca
+#TASA_APRENDIZAJE = 3e-4  #2da epoca
+#TASA_APRENDIZAJE = 1e-4  #3ra epoca
+
+BATCH_SIZE = 200
+#cada con 200 de batch, en 300 iteraciones se completa una epoca
+ITERACIONES_ENTRENAMIENTO = 300 
+
+CHKP_GUARDAR_MODELO = 100 #cada 100 iteraciones
+CHKP_REVISAR_PROGRESO = 1 #iteraciones
 ```
 ```python
-cant_imag_entrenamiento = entrenam_imagenes.shape[0]
+cant_imag_entrenamiento = entrenam_imagenes.shape[0]#60000
+cant_imag_evaluacion = eval_imagenes.shape[0]#10000
 
 ultima_iteracion = iterac_entren.eval(sess)
 print "Ultimo modelo en la iteracion: ", ultima_iteracion
+		
 
 #Desde la ultima iteracion hasta el ITERACIONES_ENTRENAMIENTO dado 
 for i in range(ultima_iteracion, ITERACIONES_ENTRENAMIENTO):
 	#Obtener nuevo subconjunto(batch) de (BATCH_SIZE =100) imagenes
-	batch_img_entrada, batch_img_clase = siguiente_batch(BATCH_SIZE,cant_imag_entrenamiento)
+	batch_img_entrada, batch_img_clase = siguiente_batch_entren(BATCH_SIZE,cant_imag_entrenamiento)
 
 	# Entrenar el batch
-	# DROPOUT = 0.5
-	sess.run(optimizador, feed_dict={x: batch_img_entrada, y_deseada: batch_img_clase, keep_prob: DROPOUT})
-	
+	[resu, _ ] = sess.run([resumen,optimizador], feed_dict={x: batch_img_entrada, y_deseada: batch_img_clase, keep_prob: DROPOUT})
+	entren_writer.add_summary(resu, i)
+
 	# Observar el progreso cada 'CHKP_REVISAR_PROGRESO' iteraciones
 	if(i+1) % CHKP_REVISAR_PROGRESO == 0 :
-		train_accuracy, validation_accuracy = chequear_progreso(sess, acierto, batch_img_entrada, batch_img_clase, i)
-		print('En la iteracion %d , Aciertos: [Entrenamiento || Validacion] => %.4f || %.4f '% (i+1, train_accuracy, validation_accuracy))
+
+		feed_dictx = {x: eval_imagenes, y_deseada: eval_clases,keep_prob: 1.0}
+		#calcular el porcentaje de acierto en las imagenes a evaluar
+		[resu, aciertos_eval] = sess.run([resumen,acierto], feed_dict=feed_dictx)	
+
+		evalua_writer.add_summary(resu, i)
+		print('En la iteracion %d , Acierto de Evaluacion => %.4f '% (i+1, aciertos_eval))
+	if(i+1 == 10):
+		CHKP_REVISAR_PROGRESO *=10
 	#Crear 'punto de control' cuando se llego a las CHKP_GUARDAR_MODELO iteraciones
 	if (i+1) % CHKP_GUARDAR_MODELO == 0 :
-		print('En la iteracion %d , Aciertos: [Entranamiento || Validacion] => %.4f || %.4f \n'% (i+1, train_accuracy, validation_accuracy))
-		print('Guardando modelo %d ....' %(i+1))
+		print('Guardando modelo en %d iteraciones....' %(i+1))
 		saver.save(sess, modelPath+NOMBRE_MODELO, global_step=i+1,write_meta_graph=True)
-```
-## Evaluacion de la Red Convolucional
-Leemos el dataset de evaluacion y procesamos los datos 
-Muestra algunas imagenes que no fueron clasificadas correctamente
-```python
-plot_example_errors(clases_pred=clases_pred, correct=correct,imagenes = imagenes, clases_flat=clases_flat)
-```
-
-```python
-print("Mostrando Matriz de Confusion")
-plot_confusion_matrix(clases_pred, clases_deseadas,numero_clases)
-plt.show()
 ```
