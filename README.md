@@ -1,4 +1,4 @@
-# Reconocedor De Numeros usando Redes Neuronales Convolucionales
+# Reconocedor De Numeros Manuscritos usando Machine Learning -  Redes Neuronales Convolucionales
 
  1. [Introduccion](#introduccion)
  2. [Cargar los Datos](#cargar-los-datos)<br/>
