@@ -1,0 +1,195 @@
+Inicio de lectura del dataset
+Procesamiento de las imagenes
+Inicio de creacion de la red
+No se encontro puntos de control.
+Ultimo modelo en la iteracion:  0
+En la iteracion 1 , Acierto de Evaluacion => 0.1504 
+En la iteracion 2 , Acierto de Evaluacion => 0.2275 
+En la iteracion 3 , Acierto de Evaluacion => 0.3291 
+En la iteracion 4 , Acierto de Evaluacion => 0.4092 
+En la iteracion 5 , Acierto de Evaluacion => 0.3857 
+En la iteracion 6 , Acierto de Evaluacion => 0.3467 
+En la iteracion 7 , Acierto de Evaluacion => 0.4961 
+En la iteracion 8 , Acierto de Evaluacion => 0.4961 
+En la iteracion 9 , Acierto de Evaluacion => 0.5293 
+En la iteracion 10 , Acierto de Evaluacion => 0.3887 
+En la iteracion 20 , Acierto de Evaluacion => 0.7314 
+En la iteracion 30 , Acierto de Evaluacion => 0.8242 
+En la iteracion 40 , Acierto de Evaluacion => 0.8711 
+En la iteracion 50 , Acierto de Evaluacion => 0.8926 
+En la iteracion 60 , Acierto de Evaluacion => 0.9121 
+En la iteracion 70 , Acierto de Evaluacion => 0.9248 
+En la iteracion 80 , Acierto de Evaluacion => 0.9248 
+En la iteracion 90 , Acierto de Evaluacion => 0.9258 
+En la iteracion 100 , Acierto de Evaluacion => 0.9395 
+En la iteracion 110 , Acierto de Evaluacion => 0.9453 
+En la iteracion 120 , Acierto de Evaluacion => 0.9463 
+En la iteracion 130 , Acierto de Evaluacion => 0.9512 
+En la iteracion 140 , Acierto de Evaluacion => 0.9502 
+En la iteracion 150 , Acierto de Evaluacion => 0.9531 
+En la iteracion 160 , Acierto de Evaluacion => 0.9570 
+En la iteracion 170 , Acierto de Evaluacion => 0.9570 
+En la iteracion 180 , Acierto de Evaluacion => 0.9609 
+En la iteracion 190 , Acierto de Evaluacion => 0.9619 
+En la iteracion 200 , Acierto de Evaluacion => 0.9688 
+En la iteracion 210 , Acierto de Evaluacion => 0.9590 
+En la iteracion 220 , Acierto de Evaluacion => 0.9736 
+En la iteracion 230 , Acierto de Evaluacion => 0.9688 
+En la iteracion 240 , Acierto de Evaluacion => 0.9727 
+En la iteracion 250 , Acierto de Evaluacion => 0.9727 
+En la iteracion 260 , Acierto de Evaluacion => 0.9688 
+En la iteracion 270 , Acierto de Evaluacion => 0.9707 
+En la iteracion 280 , Acierto de Evaluacion => 0.9707 
+En la iteracion 290 , Acierto de Evaluacion => 0.9766 
+En la iteracion 300 , Acierto de Evaluacion => 0.9717 
+Guardando modelo en 300 iteraciones....
+Tiempo usado en 300 iteraciones: 0:11:12 
+
+
+
+
+Inicio de lectura del dataset
+Procesamiento de las imagenes
+Inicio de creacion de la red
+Sesion restaurada de: /media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-300
+Ultimo modelo en la iteracion:  300
+En la iteracion 310 , Acierto de Evaluacion => 0.9746 
+En la iteracion 320 , Acierto de Evaluacion => 0.9697 
+En la iteracion 330 , Acierto de Evaluacion => 0.9775 
+En la iteracion 340 , Acierto de Evaluacion => 0.9785 
+En la iteracion 350 , Acierto de Evaluacion => 0.9746 
+En la iteracion 360 , Acierto de Evaluacion => 0.9795 
+En la iteracion 370 , Acierto de Evaluacion => 0.9775 
+En la iteracion 380 , Acierto de Evaluacion => 0.9795 
+En la iteracion 390 , Acierto de Evaluacion => 0.9814 
+En la iteracion 400 , Acierto de Evaluacion => 0.9834 
+En la iteracion 410 , Acierto de Evaluacion => 0.9814 
+En la iteracion 420 , Acierto de Evaluacion => 0.9814 
+En la iteracion 430 , Acierto de Evaluacion => 0.9834 
+En la iteracion 440 , Acierto de Evaluacion => 0.9805 
+En la iteracion 450 , Acierto de Evaluacion => 0.9805 
+En la iteracion 460 , Acierto de Evaluacion => 0.9814 
+En la iteracion 470 , Acierto de Evaluacion => 0.9863 
+En la iteracion 480 , Acierto de Evaluacion => 0.9834 
+En la iteracion 490 , Acierto de Evaluacion => 0.9834 
+En la iteracion 500 , Acierto de Evaluacion => 0.9795 
+En la iteracion 510 , Acierto de Evaluacion => 0.9854 
+En la iteracion 520 , Acierto de Evaluacion => 0.9844 
+En la iteracion 530 , Acierto de Evaluacion => 0.9814 
+En la iteracion 540 , Acierto de Evaluacion => 0.9814 
+En la iteracion 550 , Acierto de Evaluacion => 0.9795 
+En la iteracion 560 , Acierto de Evaluacion => 0.9795 
+En la iteracion 570 , Acierto de Evaluacion => 0.9863 
+En la iteracion 580 , Acierto de Evaluacion => 0.9844 
+En la iteracion 590 , Acierto de Evaluacion => 0.9854 
+En la iteracion 600 , Acierto de Evaluacion => 0.9863 
+Guardando modelo en 600 iteraciones....
+Tiempo usado en 300 iteraciones: 0:10:01 
+
+
+
+
+
+Inicio de lectura del dataset
+Procesamiento de las imagenes
+Inicio de creacion de la red
+Sesion restaurada de: /media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-600
+Ultimo modelo en la iteracion:  600
+En la iteracion 650 , Acierto de Evaluacion => 0.9805 
+En la iteracion 700 , Acierto de Evaluacion => 0.9854 
+En la iteracion 750 , Acierto de Evaluacion => 0.9844 
+En la iteracion 800 , Acierto de Evaluacion => 0.9883 
+En la iteracion 850 , Acierto de Evaluacion => 0.9902 
+En la iteracion 900 , Acierto de Evaluacion => 0.9863 
+Guardando modelo en 900 iteraciones....
+Tiempo usado en 300 iteraciones: 0:10:20
+
+
+Inicio de lectura del dataset
+Procesamiento de las imagenes
+Inicio de creacion de la red
+Sesion restaurada de: /media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-900
+Ultimo modelo en la iteracion:  900
+En la iteracion 950 , Acierto de Evaluacion => 0.9863 
+En la iteracion 1000 , Acierto de Evaluacion => 0.9883 
+En la iteracion 1050 , Acierto de Evaluacion => 0.9912 
+En la iteracion 1100 , Acierto de Evaluacion => 0.9854 
+En la iteracion 1150 , Acierto de Evaluacion => 0.9883 
+En la iteracion 1200 , Acierto de Evaluacion => 0.9883 
+Guardando modelo en 1200 iteraciones....
+Tiempo usado en 300 iteraciones: 0:12:37
+
+Sesion restaurada de: /media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-1200
+Ultimo modelo en la iteracion:  1200
+En la iteracion 1250 , Acierto de Evaluacion => 0.9893 
+En la iteracion 1300 , Acierto de Evaluacion => 0.9893 
+En la iteracion 1350 , Acierto de Evaluacion => 0.9922 
+En la iteracion 1400 , Acierto de Evaluacion => 0.9902 
+En la iteracion 1450 , Acierto de Evaluacion => 0.9893 
+En la iteracion 1500 , Acierto de Evaluacion => 0.9893 
+Guardando modelo en 1500 iteraciones....
+En la iteracion 1550 , Acierto de Evaluacion => 0.9873 
+En la iteracion 1600 , Acierto de Evaluacion => 0.9893 
+En la iteracion 1650 , Acierto de Evaluacion => 0.9893 
+En la iteracion 1700 , Acierto de Evaluacion => 0.9873 
+En la iteracion 1750 , Acierto de Evaluacion => 0.9912 
+En la iteracion 1800 , Acierto de Evaluacion => 0.9893 
+Guardando modelo en 1800 iteraciones....
+Guardando modelo en 1800 iteraciones....
+Tiempo usado en 600 iteraciones: 0:19:30 
+
+
+Inicio de lectura del dataset
+Procesamiento de las imagenes
+Inicio de creacion de la red
+Sesion restaurada de: /media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-1800
+Ultimo modelo en la iteracion:  1800
+En la iteracion 1850 , Acierto de Evaluacion => 0.9893 
+En la iteracion 1900 , Acierto de Evaluacion => 0.9922 
+En la iteracion 1950 , Acierto de Evaluacion => 0.9922 
+En la iteracion 2000 , Acierto de Evaluacion => 0.9922 
+En la iteracion 2050 , Acierto de Evaluacion => 0.9912 
+En la iteracion 2100 , Acierto de Evaluacion => 0.9912 
+Guardando modelo en 2100 iteraciones....
+En la iteracion 2150 , Acierto de Evaluacion => 0.9893 
+En la iteracion 2200 , Acierto de Evaluacion => 0.9893 
+En la iteracion 2250 , Acierto de Evaluacion => 0.9902 
+En la iteracion 2300 , Acierto de Evaluacion => 0.9902 
+En la iteracion 2350 , Acierto de Evaluacion => 0.9922 
+En la iteracion 2400 , Acierto de Evaluacion => 0.9902 
+Guardando modelo en 2400 iteraciones....
+Tiempo usado en 600 iteraciones: 0:17:49 
+
+
+Inicio de lectura del dataset
+Procesamiento de las imagenes
+Inicio de creacion de la red
+Sesion restaurada de: /media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-2400
+Ultimo modelo en la iteracion:  2400
+En la iteracion 2425 , Acierto de Evaluacion => 0.9873 
+En la iteracion 2450 , Acierto de Evaluacion => 0.9912 
+En la iteracion 2475 , Acierto de Evaluacion => 0.9863 
+En la iteracion 2500 , Acierto de Evaluacion => 0.9902 
+En la iteracion 2525 , Acierto de Evaluacion => 0.9893 
+En la iteracion 2550 , Acierto de Evaluacion => 0.9912 
+En la iteracion 2575 , Acierto de Evaluacion => 0.9922 
+En la iteracion 2600 , Acierto de Evaluacion => 0.9902 
+En la iteracion 2625 , Acierto de Evaluacion => 0.9912 
+En la iteracion 2650 , Acierto de Evaluacion => 0.9912 
+En la iteracion 2675 , Acierto de Evaluacion => 0.9912 
+En la iteracion 2700 , Acierto de Evaluacion => 0.9902 
+Guardando modelo en 2700 iteraciones....
+En la iteracion 2725 , Acierto de Evaluacion => 0.9912 
+En la iteracion 2750 , Acierto de Evaluacion => 0.9912 
+En la iteracion 2775 , Acierto de Evaluacion => 0.9893 
+En la iteracion 2800 , Acierto de Evaluacion => 0.9902 
+En la iteracion 2825 , Acierto de Evaluacion => 0.9902 
+En la iteracion 2850 , Acierto de Evaluacion => 0.9893 
+En la iteracion 2875 , Acierto de Evaluacion => 0.9883 
+En la iteracion 2900 , Acierto de Evaluacion => 0.9922 
+En la iteracion 2925 , Acierto de Evaluacion => 0.9902 
+En la iteracion 2950 , Acierto de Evaluacion => 0.9912 
+En la iteracion 2975 , Acierto de Evaluacion => 0.9902 
+En la iteracion 3000 , Acierto de Evaluacion => 0.9883 
+Guardando modelo en 3000 iteraciones....
+Tiempo usado en 600 iteraciones: 0:18:24 
