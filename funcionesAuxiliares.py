@@ -1,6 +1,7 @@
+import pickle
 import numpy as np
 from matplotlib import pyplot as plt
-
+import math
 """
 
 def flatten_layer(layer):
@@ -28,6 +29,16 @@ def flatten_layer(layer):
     return layer_flat, num_features
 
 """
+
+def readData(file):
+
+    with open(file, mode='rb') as f:
+        data = pickle.load(f)
+
+    X_file, y_file = data['features'], data['labels']
+
+    return X_file, y_file
+
 # display an image
 def display(img):
     
@@ -55,7 +66,7 @@ def activation_vector(labels_dense, num_classes):
     return labels_one_hot
 
 
-#Function used to plot 9 images in a 3x3 grid, and writing the true and predicted classes below each image.
+#Function used to plot 16 images in a 4x4 grid, and writing the true and predicted classes below each image.
 def plot_images(images, cls_true, cls_pred=None):
     assert len(images) == len(cls_true) == 16
     img_shape = (28, 28)
@@ -141,7 +152,135 @@ def plot_confusion_matrix(cls_pred,cls_true,num_classes):
         plt.text(j, i, cm[i, j], horizontalalignment="center", color="white" if cm[i, j] > thresh else "black")
 
 
-    plt.xlabel('Predicida')
+    plt.xlabel('Predecida')
     plt.ylabel('Deseada')
 
+def plot_conv_weights(w, input_channel=0):
+    # Assume weights are TensorFlow ops for 4-dim variables
+    # e.g. weights_conv1 or weights_conv2.
+    
+    # Retrieve the values of the weight-variables from TensorFlow.
+    # A feed-dict is not necessary because nothing is calculated.
+    #w = session.run(weights)
+
+    # Get the lowest and highest values for the weights.
+    # This is used to correct the colour intensity across
+    # the images so they can be compared with each other.
+    w_min = np.min(w)
+    w_max = np.max(w)
+
+    # Number of filters used in the conv. layer.
+    num_filters = w.shape[3]
+    xs = num_filters/8
+    ys = 8
+    
+    # Create figure with a grid of sub-plots.
+    fig, axes = plt.subplots(xs, ys)
+
+    # Plot all the filter-weights.
+    for i, ax in enumerate(axes.flat):
+        # Only plot the valid filter-weights.
+        if i<num_filters:
+            # Get the weights for the i'th filter of the input channel.
+            # See new_conv_layer() for details on the format
+            # of this 4-dim tensor.
+            img = w[:, :, input_channel, i]
+
+            # Plot image.
+            import itertools
+            for ii, jj in itertools.product(range(w.shape[0]), range(w.shape[1])):
+                ax.text(jj, ii, round(img[ii, jj],1),size=3, va='center', ha="center", color="blue")
+            
+            ax.imshow(img, vmin=w_min, vmax=w_max,
+                      interpolation='sinc',#'nearest' | sinc
+                      cmap='RdGy'# cmap = 'seismic | binary'
+                      )
+        
+        # Remove ticks from the plot.
+        ax.set_xticks([])
+        ax.set_yticks([])
+    
+    # Ensure the plot is shown correctly with multiple plots
+    # in a single Notebook cell.
+    plt.show()
+
+def plot_conv_weights2(w, input_channel=0):
+    # Assume weights are TensorFlow ops for 4-dim variables
+    # e.g. weights_conv1 or weights_conv2.
+    
+    # Retrieve the values of the weight-variables from TensorFlow.
+    # A feed-dict is not necessary because nothing is calculated.
+    #w = session.run(weights)
+
+    # Get the lowest and highest values for the weights.
+    # This is used to correct the colour intensity across
+    # the images so they can be compared with each other.
+    w_min = np.min(w)
+    w_max = np.max(w)
+
+    # Number of filters used in the conv. layer.
+    num_filters = w.shape[3]
+    xs = num_filters/8
+    ys = 8
+    
+    # Create figure with a grid of sub-plots.
+    fig, axes = plt.subplots(xs, ys)
+
+    # Plot all the filter-weights.
+    for i, ax in enumerate(axes.flat):
+        # Only plot the valid filter-weights.
+        if i<num_filters:
+            # Get the weights for the i'th filter of the input channel.
+            # See new_conv_layer() for details on the format
+            # of this 4-dim tensor.
+            img = w[:, :, input_channel, i]
+
+            # Plot image.
+            ax.imshow(img, vmin=w_min, vmax=w_max,
+                      interpolation='sinc',#'nearest' | sinc
+                      cmap='RdGy'# cmap = 'seismic | binary'
+                      )
+        
+        # Remove ticks from the plot.
+        ax.set_xticks([])
+        ax.set_yticks([])
+    
+    # Ensure the plot is shown correctly with multiple plots
+    # in a single Notebook cell.
+    plt.show()
+
+
+#def plot_conv_layer(sess, layer, image,xs,ys):
+def plot_conv_layer(values):
+    # Assume layer is a TensorFlow op that outputs a 4-dim tensor
+    # which is the output of a convolutional layer,
+    # e.g. layer_conv1 or layer_conv2.
+
+    # Number of filters used in the conv. layer.
+    num_filters = values.shape[3]
+    xs = num_filters/8
+    ys = 8
+    # Create figure with a grid of sub-plots.
+    fig, axes = plt.subplots(xs, ys)
+
+    # Plot the output images of all the filters.
+    for i, ax in enumerate(axes.flat):
+        # Only plot the images for valid filters.
+        if i<num_filters:
+            # Get the output image of using the i'th filter.
+            # See new_conv_layer() for details on the format
+            # of this 4-dim tensor.
+            img = values[0, :, :, i]
+
+            # Plot image.
+            ax.imshow(img, interpolation='sinc', cmap='RdGy')
+            
+        
+        # Remove ticks from the plot.
+        ax.set_xticks([])
+        ax.set_yticks([])
+    
+    # Ensure the plot is shown correctly with multiple plots
+    # in a single Notebook cell.
+    plt.show()
 
