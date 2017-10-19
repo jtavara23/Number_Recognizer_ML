@@ -1,0 +1,24 @@
+u'/media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-300'
+Acierto en el conjunto de Testing: 97.73% (9773 / 10000)
+-------------------------------------------------------------
+u'/media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-600'
+Acierto en el conjunto de Testing: 98.53% (9853 / 10000)
+-------------------------------------------------------------
+u'/media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-900'
+Acierto en el conjunto de Testing: 98.73% (9873 / 10000)
+-------------------------------------------------------------
+u'/media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-1200'
+Acierto en el conjunto de Testing: 99.05% (9905 / 10000)
+-------------------------------------------------------------
+u'/media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-1800'
+Acierto en el conjunto de Testing: 99.16% (9916 / 10000)
+-------------------------------------------------------------
+u'/media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-2400'
+Acierto en el conjunto de Testing: 99.18% (9918 / 10000)
+-------------------------------------------------------------
+u'/media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-2400'
+Acierto en el conjunto de Testing: 99.25% (9925 / 10000)
+-------------------------------------------------------------
+u'/media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/modelo-3000'
+Acierto en el conjunto de Testing: 99.25% (9925 / 10000)
+-------------------------------------------------------------
