@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd 
 from matplotlib import pyplot as plt
 import tensorflow as tf
-from funcionesAuxiliares import activation_vector, plot_example_errors,plot_confusion_matrix
+from funcionesAuxiliares import readData,activation_vector, plot_example_errors,plot_confusion_matrix
 import math
 import os
 
@@ -14,33 +14,29 @@ NOMBRE_PROBABILIDAD = 'mantener_probabilidad'
 
 if __name__ == "__main__":
 	path = '/media/josuetavara/Gaston/mnist/mnistDS/'
-	dataset = pd.read_csv(path+'datasets/10ktest.csv')
-	imagenes = dataset.iloc[:,1:].values
-	imagenes = imagenes.astype(np.float)
-
+	dataset = (path+'datasets/10k.p')
+	imagenes, clases_flat = readData(dataset)
 	
 	# Normalizar, convertir de [0:255] => [0.0:1.0]
-	imagenes = np.multiply(imagenes, 1.0 / 255.0)
-	#Organizar las clases de las imagenes en un solo vector
-	clases_flat = dataset.iloc[:,0].values
+	imagenes = (imagenes / 255.).astype(np.float32)
 
 	numero_clases = np.unique(clases_flat).shape[0]
-	#print('number of labes => {0}'.format(numero_clases))
+	print('number of labes => {0}'.format(numero_clases))
 	
 	# convertir tipo de clases de escalares a vectores de activacion de 1s
 	# 0 => [1 0 0 0 0 0 0 0 0 0]
 	# 1 => [0 1 0 0 0 0 0 0 0 0]
 	# ...
 	# 9 => [0 0 0 0 0 0 0 0 0 1]
-	labels = activation_vector(clases_flat, numero_clases)
-	labels = labels.astype(np.uint8)
+	labels = np.eye(numero_clases)[clases_flat]
 
 	# Restauramos el ultimo punto de control
 	with tf.Session() as sess:
 		sess.run(tf.global_variables_initializer())
-		saver = tf.train.import_meta_graph(path + 'CNN/models/model-100.meta')
-		saver.restore(sess, tf.train.latest_checkpoint(path + 'CNN/models/.'))
-		print "Modelo restaurado",tf.train.latest_checkpoint(path + 'CNN/models/.')
+		saver = tf.train.import_meta_graph(path + 'CNN/modelos2/modelo-3000.meta')
+		ult_pto_ctrl = tf.train.latest_checkpoint(path + 'CNN/modelos2/.')
+		saver.restore(sess, ult_pto_ctrl)
+		print "Modelo restaurado",ult_pto_ctrl
 		
 		
 		#Tensor predictor para clasificar la imagen
@@ -81,18 +77,19 @@ if __name__ == "__main__":
 		# La precision de la clasificacion es el numero de imgs clasificadas correctamente
 		acc = float(correct_sum) / cant_evaluar
 
-		msg = "Acierto en el conjunto de Testing: {0:.1%} ({1} / {2})"
+		msg = "Acierto en el conjunto de Testing: {0:.2%} ({1} / {2})"
 		print(msg.format(acc, correct_sum, cant_evaluar))
 
 		# Muestra algunas imagenes que no fueron clasificadas correctamente
-		plot_example_errors(cls_pred=clases_pred, correct=correct,images = imagenes, labels_flat=clases_flat)
-		plt.show()
+		#plot_example_errors(cls_pred=clases_pred, correct=correct,images = imagenes, labels_flat=clases_flat)
+		#plt.show()
 		print("Mostrando Matriz de Confusion")
-		plot_confusion_matrix(clases_pred, clases_deseadas,numero_clases)
-		plt.show()
+		#plot_confusion_matrix(clases_pred, clases_deseadas,numero_clases)
+		#plt.show()
 		
-		print "Fin de evaluacion"
-		outFile = open("Test_ac.csv","a")
-		outFile.write(repr(tf.train.latest_checkpoint(path + 'CNN/models/.'))+"\n")
+		
+		outFile = open("Test_mo2_ac.csv","a")
+		outFile.write(repr(ult_pto_ctrl)+"\n")
 		outFile.write(msg.format(acc, correct_sum, cant_evaluar))
 		outFile.write("\n-------------------------------------------------------------\n")
+		print "Fin de evaluacion"
