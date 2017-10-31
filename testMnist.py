@@ -6,12 +6,6 @@ from funcionesAuxiliares import readData,activation_vector, plot_example_errors,
 import math
 import os
 
-os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
-BATCH_SIZE = 200
-NOMBRE_TENSOR_ENTRADA = 'inputX'
-NOMBRE_TENSOR_SALIDA_DESEADA = "outputYDeseada"
-NOMBRE_PROBABILIDAD = 'mantener_probabilidad'
-
 if __name__ == "__main__":
 	path = '/media/josuetavara/Gaston/mnist/mnistDS/'
 	dataset = (path+'datasets/10k.p')
