@@ -4,7 +4,6 @@
  2. [Cargar los Datos](#cargar-los-datos)<br/>
     2.1 [Dividir conjunto de entrenamiento y evaluacion](#dividir-conjunto-de-entrenamiento-y-evaluacion)<br/>
     2.2 [Procesar los Datos](#procesar-los-datos)<br/>
-    2.3 [Asignacion de clases](#asignacion-de-clases)<br/>
     
  3. [Red Convolucional](#red-convolucional)<br/>
     3.1 [Conceptos Basicos](#red-convolucional)<br/>
@@ -63,29 +62,6 @@ def procesamiento(dataset):
 	
 	#Tamanho de una imagen: 784 valores que son obtenidos de una imagen de 28 x 28
 	tam_imagen = imagenes.shape[1]
-```
-### Asignacion de clases
-Para la mayoría de los problemas de clasificación, se utilizan "vectores de activacion". Un vector de activacion es un vector que contiene un único elemento igual a 1 y el resto de los elementos igual a 0. En este caso, el n-ésimo dígito se representa como un vector cero con 1 en la posición n-ésima.<br />
-```python 
-	#Organizar las clases de las imagenes en un solo vector
-	clases_flat = dataset.iloc[:,0].values.ravel()
-
-	# convertir tipo de clases de escalares a vectores de activacion de 1s
-	# 0 => [1 0 0 0 0 0 0 0 0 0]
-	# 1 => [0 1 0 0 0 0 0 0 0 0]
-	# ...
-	# 9 => [0 0 0 0 0 0 0 0 0 1]
-	clases = activation_vector(clases_flat, CANT_CLASES)
-	clases = clases.astype(np.uint8)
-	return tam_imagen, imagenes[:], clases[:], clases_flat[:]
-```
-```python
-def activation_vector(labels_dense, num_classes):
-    num_labels = labels_dense.shape[0]
-    index_offset = np.arange(num_labels) * num_classes
-    labels_one_hot = np.zeros((num_labels, num_classes))
-    labels_one_hot.flat[index_offset + labels_dense.ravel()] = 1
-    return labels_one_hot
 ```
 
 ## Red Convolucional
