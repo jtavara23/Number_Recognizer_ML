@@ -322,107 +322,12 @@ sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 ``` 
 Una vez que el modelo de la red haya sido creado a atraves de un grafo de tensorflow, tambien es necesario guardar el modelo para usarlo posteriormente en la evaluacion de datos o continuar entrenando la red.
-``` python
-saver = tf.train.Saver()
-modelPath = '/media/josuetavara/Gaston/mnist/mnistDS/CNN/models/'
-ckpt = tf.train.get_checkpoint_state(modelPath + '.')
-if ckpt and ckpt.model_checkpoint_path:
-		saver.restore(sess, ckpt.model_checkpoint_path)
-		print("Sesion restaurada de: %s" % ckpt.model_checkpoint_path)
-	else:
-		print("No se encontro puntos de control.")
-```
+
 Hay 60.000 imágenes en el conjunto de entrenamiento. Se tarda mucho tiempo y consume bastantes recursos el intentar optimizar el entrenamiento para todas las imagenes. Por lo tanto, sólo se utiliza un pequeño lote de imágenes en cada iteración del optimizador. 
-```python
-BATCH_SIZE = 200
-#una epoca culmina cuando se ha entrenado a todas las imagenes del conj.Entrenamiento
-#Para 60000 = con 200 imagenes * 300 iteraciones
-epocas_completadas = 0 
-indice_en_epoca = 0
-```
-```python
-
-def siguiente_batch(batch_size,cant_imag_entrenamiento ):
-    
-	#cant_imag_entrenamiento= 60000
-	global entrenam_imagenes
-	global entrenam_clases
-	global entrenam_clases_flat
-	global indice_en_epoca
-	global epocas_completadas
-
-	comienzo = indice_en_epoca
-	indice_en_epoca += batch_size
-
-	# Cuando ya se han utilizado todos los datos de entrenamiento, se reordena aleatoriamente.
-	if indice_en_epoca > cant_imag_entrenamiento:
-		# epoca finalizada
-		epocas_completadas += 1
-		# barajear los datos
-		perm = np.arange(cant_imag_entrenamiento)
-		np.random.shuffle(perm)
-		#perm = stratified_shuffle(entrenam_clases_flat, 10)
-		entrenam_imagenes = entrenam_imagenes[perm]
-		entrenam_clases = entrenam_clases[perm]
-		entrenam_clases_flat = entrenam_clases_flat[perm]
-		# comenzar nueva epoca
-		comienzo = 0
-		indice_en_epoca = batch_size
-		assert batch_size <= cant_imag_entrenamiento
-	end = indice_en_epoca
-	return entrenam_imagenes[comienzo:end], entrenam_clases[comienzo:end]
-```
 
 Creamos un archivo para guardar los aciertos de Entrenamiento y Validacion
 ```python
 train_val_File = open("TrainVal_ac.csv","a")
-```
-
-**Comenzamos el entrenamiento**
-```python
-TASA_APRENDIZAJE = 5e-4  #1ra epoca
-#TASA_APRENDIZAJE = 3e-4  #2da epoca
-#TASA_APRENDIZAJE = 1e-4  #3ra epoca
-
-BATCH_SIZE = 200
-#cada con 200 de batch, en 300 iteraciones se completa una epoca
-ITERACIONES_ENTRENAMIENTO = 300 
-
-CHKP_GUARDAR_MODELO = 100 #cada 100 iteraciones
-CHKP_REVISAR_PROGRESO = 1 #iteraciones
-```
-```python
-cant_imag_entrenamiento = entrenam_imagenes.shape[0]#60000
-cant_imag_evaluacion = eval_imagenes.shape[0]#10000
-
-ultima_iteracion = iterac_entren.eval(sess)
-print "Ultimo modelo en la iteracion: ", ultima_iteracion
-		
-
-#Desde la ultima iteracion hasta el ITERACIONES_ENTRENAMIENTO dado 
-for i in range(ultima_iteracion, ITERACIONES_ENTRENAMIENTO):
-	#Obtener nuevo subconjunto(batch) de (BATCH_SIZE =100) imagenes
-	batch_img_entrada, batch_img_clase = siguiente_batch_entren(BATCH_SIZE,cant_imag_entrenamiento)
-
-	# Entrenar el batch
-	[resu, _ ] = sess.run([resumen,optimizador], feed_dict={x: batch_img_entrada, y_deseada: batch_img_clase, keep_prob: DROPOUT})
-	entren_writer.add_summary(resu, i)
-
-	# Observar el progreso cada 'CHKP_REVISAR_PROGRESO' iteraciones
-	if(i+1) % CHKP_REVISAR_PROGRESO == 0 :
-
-		feed_dictx = {x: eval_imagenes, y_deseada: eval_clases,keep_prob: 1.0}
-		#calcular el porcentaje de acierto en las imagenes a evaluar
-		[resu, aciertos_eval] = sess.run([resumen,acierto], feed_dict=feed_dictx)	
-
-		evalua_writer.add_summary(resu, i)
-		print('En la iteracion %d , Acierto de Evaluacion => %.4f '% (i+1, aciertos_eval))
-	if(i+1 == 10):
-		CHKP_REVISAR_PROGRESO *=10
-	#Crear 'punto de control' cuando se llego a las CHKP_GUARDAR_MODELO iteraciones
-	if (i+1) % CHKP_GUARDAR_MODELO == 0 :
-		print('Guardando modelo en %d iteraciones....' %(i+1))
-		saver.save(sess, modelPath+NOMBRE_MODELO, global_step=i+1,write_meta_graph=True)
 ```
 
 Ejecutando entrenamiento para la 1ra epoca
