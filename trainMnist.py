@@ -236,18 +236,6 @@ if __name__ == "__main__":
 	#entren_writer.add_graph(sess.graph)
 	evalua_writer = tf.summary.FileWriter(rutaModelo+'evaluacion11', sess.graph)
 
-	
-	embedding = tf.Variable(tf.zeros([1024, 1024]), name="test_embedding")
-	assignment = embedding.assign(embedding_input)
-	config = tf.contrib.tensorboard.plugins.projector.ProjectorConfig()
-	embedding_config = config.embeddings.add()
-	embedding_config.tensor_name = embedding.name
-	embedding_config.sprite.image_path = 'modelos2/sprite_1024.png'
-	embedding_config.metadata_path =  'modelos2/spriteslabels_1024.tsv'
-	# Specify the width and height of a single thumbnail.
-	embedding_config.sprite.single_image_dim.extend([28, 28])
-	tf.contrib.tensorboard.plugins.projector.visualize_embeddings(evalua_writer, config)
-
 	saver = tf.train.Saver()
 	ckpt = tf.train.get_checkpoint_state(rutaModelo + '.')
 	
@@ -261,19 +249,6 @@ if __name__ == "__main__":
 	
 	ultima_iteracion = iterac_entren.eval(sess)
 	print "Ultimo modelo en la iteracion: ", ultima_iteracion
-	
-	
-	epocas_completadas = 0
-	indice_en_epoca = 0
-	cant_imag_entrenamiento = entrenam_imagenes.shape[0]#60000
-	cant_imag_evaluacion = eval_imagenes.shape[0]#10000
-	
-	clases_calc = np.zeros(shape=cant_imag_evaluacion, dtype=np.int)
-	
-	comienzo_time = time.time()
-	it = 0
-	su_entren = 0
-	
 	
 	
 	#Empieza el entrenamiento desde la ultima iteracion hasta el ITERACIONES_ENTRENAMIENTO dado 
