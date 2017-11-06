@@ -181,28 +181,6 @@ def create_cnn(sess):
 	
 	#------------------------------------------------------------
 	
-	#el error que queremos minimizar va a estar en funcion de lo calculado con lo deseado(real)
-	#error = -tf.reduce_sum(y_deseada * tf.log(y_calculada))
-	
-	#el error que queremos minimizar va a estar en funcion de lo calculado con lo deseado(real)
-	regularizers = (tf.nn.l2_loss(pesos_conv1) + tf.nn.l2_loss(pesos_conv2) + tf.nn.l2_loss(pesos_fc1)  + tf.nn.l2_loss(pesos_fc2))
-	softmax_cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=capa_fc2, labels=y_deseada)
-	error = tf.reduce_mean(softmax_cross_entropy, name="error") + 0.0001* regularizers
-
-	with tf.name_scope("entrenamiento"):
-		#Funcion de optimizacion
-		iterac_entren = tf.Variable(0, name='iterac_entren', trainable=False)
-		optimizador = tf.train.AdamOptimizer(TASA_APRENDIZAJE).minimize(error, global_step=iterac_entren)
-
-	with tf.name_scope("Acierto"):
-		# evaluacion
-		prediccion_correcta = tf.equal(tf.argmax(y_calculada,1), tf.argmax(y_deseada,1))
-		acierto = tf.reduce_mean(tf.cast(prediccion_correcta, 'float'))
-		tf.summary.scalar("acierto", acierto)
-	
-	resumen = tf.summary.merge_all()
-	
-	internal_conv = [capa_conv1, capa_conv2, nopool_conv1, nopool_conv2]
 	return resumen, x,y_deseada, keep_prob, internal_conv, iterac_entren, optimizador,acierto, predictor,embedding_input
 
 
