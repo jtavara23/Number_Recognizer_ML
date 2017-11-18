@@ -11,11 +11,6 @@ from funcionesAuxiliares import  readData,display,activation_vector,plot_confusi
 from subprocess import check_output
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
 
-NOMBRE_MODELO = 'modelo'
-NOMBRE_TENSOR_ENTRADA = 'inputX'
-NOMBRE_PROBABILIDAD = 'mantener_probabilidad'
-NOMBRE_TENSOR_SALIDA_CALCULADA = 'outputYCalculada'
-NOMBRE_TENSOR_SALIDA_DESEADA = "outputYDeseada"
 
 rutaModelo = '/media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2/'
 #tensorboard --logdir /media/josuetavara/Gaston/mnist/mnistDS/CNN/modelos2
